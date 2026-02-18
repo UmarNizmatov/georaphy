@@ -1,2018 +1,2939 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uz">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Iqlim O'zgarishi - Tabiatni Asraylik</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --fire: #FF4500;
-  --amber: #FF8C00;
-  --gold: #FFD700;
-  --ice: #00E5FF;
-  --green: #00FF88;
-  --dark: #0a0a0f;
-  --darker: #050508;
-  --text: #F0EDE8;
-  --muted: #8A8A9A;
-  --card-bg: rgba(255,255,255,0.04);
-  --border: rgba(255,255,255,0.08);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--dark);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  overflow-x: hidden;
-  cursor: none;
-}
-
-/* CUSTOM CURSOR */
-.cursor {
-  position: fixed;
-  width: 12px;
-  height: 12px;
-  background: var(--fire);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 10000;
-  transition: transform 0.1s;
-  mix-blend-mode: screen;
-}
-.cursor-trail {
-  position: fixed;
-  width: 32px;
-  height: 32px;
-  border: 1px solid rgba(255,69,0,0.5);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  transition: transform 0.3s, left 0.15s, top 0.15s;
-}
-
-/* NAV */
-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  padding: 1rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(10,10,15,0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-}
-
-.nav-logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  font-weight: 900;
-  background: linear-gradient(90deg, var(--fire), var(--gold));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-decoration: none;
-}
-
-.nav-links {
-  display: flex;
-  gap: 2rem;
-  list-style: none;
-}
-
-.nav-links a {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  transition: color 0.3s;
-  cursor: none;
-}
-.nav-links a:hover { color: var(--gold); }
-
-/* HAMBURGER */
-.hamburger {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  cursor: pointer;
-  z-index: 1001;
-  padding: 5px;
-}
-.hamburger span {
-  display: block;
-  width: 25px;
-  height: 2px;
-  background: var(--text);
-  transition: all 0.3s;
-}
-.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger.open span:nth-child(2) { opacity: 0; }
-.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-/* MOBILE MENU */
-.mobile-menu {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: var(--darker);
-  z-index: 999;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2.5rem;
-}
-.mobile-menu.open { display: flex; }
-.mobile-menu a {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--text);
-  text-decoration: none;
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.4s;
-}
-.mobile-menu.open a {
-  opacity: 1;
-  transform: translateY(0);
-}
-.mobile-menu.open a:nth-child(1) { transition-delay: 0.1s; }
-.mobile-menu.open a:nth-child(2) { transition-delay: 0.2s; }
-.mobile-menu.open a:nth-child(3) { transition-delay: 0.3s; }
-.mobile-menu.open a:nth-child(4) { transition-delay: 0.4s; }
-.mobile-menu.open a:nth-child(5) { transition-delay: 0.5s; }
-.mobile-menu a:hover { color: var(--fire); }
-
-/* HERO */
-#hero {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  padding: 6rem 2rem 4rem;
-}
-
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 30% 50%, rgba(255,69,0,0.15) 0%, transparent 60%),
-              radial-gradient(ellipse at 70% 30%, rgba(255,140,0,0.1) 0%, transparent 50%);
-}
-
-/* PARTICLES */
-.particles { position: absolute; inset: 0; overflow: hidden; }
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  animation: float linear infinite;
-  opacity: 0.6;
-}
-@keyframes float {
-  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.6; }
-  90% { opacity: 0.6; }
-  100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
-}
-
-/* EARTH SVG */
-.earth-container {
-  position: absolute;
-  right: -5vw;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 55vw;
-  max-width: 600px;
-  opacity: 0.6;
-  animation: earthSpin 40s linear infinite;
-}
-@keyframes earthSpin {
-  from { transform: translateY(-50%) rotate(0deg); }
-  to { transform: translateY(-50%) rotate(360deg); }
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 650px;
-}
-
-.welcome-tag {
-  display: inline-block;
-  padding: 0.4rem 1.2rem;
-  border: 1px solid rgba(255,215,0,0.4);
-  border-radius: 999px;
-  font-size: 0.8rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 1.5rem;
-  animation: fadeSlideUp 1s ease forwards;
-}
-
-.hero-welcome {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(3rem, 7vw, 5.5rem);
-  font-weight: 900;
-  line-height: 1;
-  margin-bottom: 1rem;
-  animation: fadeSlideUp 1s ease 0.2s both;
-}
-
-.hero-welcome .line1 {
-  display: block;
-  background: linear-gradient(135deg, var(--text) 0%, var(--gold) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.hero-welcome .line2 {
-  display: block;
-  font-size: clamp(1.2rem, 3vw, 1.8rem);
-  font-weight: 400;
-  color: var(--muted);
-  -webkit-text-fill-color: var(--muted);
-  margin-top: 0.5rem;
-}
-
-.hero-subtitle {
-  font-size: 1.05rem;
-  color: var(--muted);
-  line-height: 1.7;
-  margin-bottom: 2.5rem;
-  animation: fadeSlideUp 1s ease 0.4s both;
-  max-width: 500px;
-}
-
-.temp-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 1rem;
-  background: rgba(255,69,0,0.1);
-  border: 1px solid rgba(255,69,0,0.3);
-  border-radius: 1rem;
-  padding: 1rem 1.5rem;
-  margin-bottom: 2rem;
-  animation: fadeSlideUp 1s ease 0.5s both;
-}
-.temp-number {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: var(--fire);
-  animation: tempPulse 2s ease-in-out infinite;
-}
-@keyframes tempPulse {
-  0%, 100% { text-shadow: 0 0 20px rgba(255,69,0,0.5); }
-  50% { text-shadow: 0 0 40px rgba(255,69,0,0.9); }
-}
-.temp-info { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
-
-.hero-btns {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  animation: fadeSlideUp 1s ease 0.6s both;
-}
-.btn {
-  padding: 0.9rem 2rem;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-  cursor: none;
-  transition: all 0.3s;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.btn-fire {
-  background: linear-gradient(135deg, var(--fire), var(--amber));
-  color: white;
-  box-shadow: 0 8px 30px rgba(255,69,0,0.3);
-}
-.btn-fire:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(255,69,0,0.5); }
-.btn-outline {
-  border: 1px solid var(--border);
-  color: var(--text);
-  background: transparent;
-}
-.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-
-@keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* SCROLL INDICATOR */
-.scroll-indicator {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  animation: fadeSlideUp 1s ease 1s both;
-}
-.scroll-line {
-  width: 1px;
-  height: 50px;
-  background: linear-gradient(to bottom, var(--muted), transparent);
-  animation: scrollPulse 2s ease-in-out infinite;
-}
-@keyframes scrollPulse {
-  0%, 100% { opacity: 0.5; transform: scaleY(1); }
-  50% { opacity: 1; transform: scaleY(1.3); }
-}
-
-/* STATS BAND */
-.stats-band {
-  padding: 4rem 2rem;
-  background: linear-gradient(135deg, rgba(255,69,0,0.05) 0%, rgba(255,140,0,0.05) 100%);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-.stats-grid {
-  max-width: 1000px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-  text-align: center;
-}
-.stat-item { display: flex; flex-direction: column; gap: 0.5rem; }
-.stat-num {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.8rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--fire), var(--gold));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
-
-/* SECTIONS */
-section {
-  padding: 6rem 2rem;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.section-label {
-  display: inline-block;
-  font-size: 0.75rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--fire);
-  margin-bottom: 1rem;
-  font-weight: 600;
-}
-
-.section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 900;
-  line-height: 1.1;
-  margin-bottom: 1.5rem;
-}
-
-.section-body {
-  font-size: 1.05rem;
-  color: var(--muted);
-  line-height: 1.8;
-  max-width: 650px;
-}
-
-/* CAUSES */
-#sabablari { border-top: 1px solid var(--border); }
-.causes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-top: 3rem;
-}
-
-.cause-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 1.5rem;
-  padding: 2rem;
-  transition: all 0.4s;
-  position: relative;
-  overflow: hidden;
-  cursor: none;
-}
-.cause-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(255,69,0,0.1) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-.cause-card:hover { transform: translateY(-5px); border-color: rgba(255,69,0,0.4); }
-.cause-card:hover::before { opacity: 1; }
-
-.cause-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  display: block;
-}
-.cause-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 0.7rem;
-  color: var(--text);
-}
-.cause-text { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
-
-/* CO2 METER */
-.co2-section {
-  background: linear-gradient(135deg, rgba(255,69,0,0.08) 0%, rgba(0,0,0,0) 60%);
-  border: 1px solid var(--border);
-  border-radius: 2rem;
-  padding: 3rem;
-  margin-top: 4rem;
-  text-align: center;
-}
-.co2-meter {
-  width: 200px;
-  height: 200px;
-  margin: 2rem auto;
-  position: relative;
-}
-.co2-meter svg { transform: rotate(-90deg); }
-.co2-meter .track {
-  fill: none;
-  stroke: rgba(255,255,255,0.05);
-  stroke-width: 12;
-}
-.co2-meter .progress {
-  fill: none;
-  stroke: url(#fireGrad);
-  stroke-width: 12;
-  stroke-linecap: round;
-  stroke-dasharray: 502;
-  stroke-dashoffset: 502;
-  transition: stroke-dashoffset 2s ease;
-}
-.co2-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-.co2-value {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem;
-  font-weight: 900;
-  color: var(--fire);
-}
-.co2-unit { font-size: 0.75rem; color: var(--muted); }
-
-/* CONSEQUENCES */
-#oqibatlari { border-top: 1px solid var(--border); }
-
-.timeline {
-  position: relative;
-  padding-left: 2rem;
-  margin-top: 3rem;
-}
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: linear-gradient(to bottom, var(--fire), var(--amber), transparent);
-}
-.timeline-item {
-  position: relative;
-  padding: 0 0 2.5rem 2rem;
-  opacity: 0;
-  transform: translateX(-20px);
-  transition: all 0.6s ease;
-}
-.timeline-item.visible { opacity: 1; transform: translateX(0); }
-.timeline-dot {
-  position: absolute;
-  left: -2.35rem;
-  top: 0.3rem;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--fire);
-  box-shadow: 0 0 15px var(--fire);
-}
-.timeline-year {
-  font-size: 0.75rem;
-  color: var(--fire);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  margin-bottom: 0.4rem;
-  font-weight: 600;
-}
-.timeline-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-.timeline-text { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
-
-/* TEMP CHART */
-.chart-container {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 1.5rem;
-  padding: 2rem;
-  margin-top: 3rem;
-  overflow: hidden;
-}
-.chart-title {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-bottom: 2rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-.chart { display: flex; align-items: flex-end; gap: 4px; height: 150px; }
-.bar {
-  flex: 1;
-  background: linear-gradient(to top, var(--fire), var(--amber));
-  border-radius: 4px 4px 0 0;
-  position: relative;
-  transition: height 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  cursor: none;
-}
-.bar:hover::after {
-  content: attr(data-year) ': +' attr(data-val) '°C';
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.7rem;
-  background: rgba(0,0,0,0.8);
-  padding: 2px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
-  color: var(--gold);
-}
-.chart-labels {
-  display: flex;
-  gap: 4px;
-  margin-top: 0.5rem;
-}
-.chart-label {
-  flex: 1;
-  text-align: center;
-  font-size: 0.65rem;
-  color: var(--muted);
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  height: 30px;
-  display: flex;
-  align-items: center;
-}
-
-/* WHAT TO DO */
-#nima_qilish { border-top: 1px solid var(--border); }
-
-.actions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-top: 3rem;
-}
-.action-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 1.5rem;
-  padding: 1.8rem;
-  transition: all 0.4s;
-  cursor: none;
-  position: relative;
-  overflow: hidden;
-}
-.action-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--green), var(--ice));
-  transform: scaleX(0);
-  transition: transform 0.4s;
-}
-.action-card:hover { transform: translateY(-4px); border-color: rgba(0,255,136,0.3); }
-.action-card:hover::after { transform: scaleX(1); }
-.action-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
-.action-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 0.6rem;
-  color: var(--text);
-}
-.action-text { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
-.action-impact {
-  display: inline-block;
-  margin-top: 0.8rem;
-  padding: 0.3rem 0.8rem;
-  background: rgba(0,255,136,0.1);
-  border: 1px solid rgba(0,255,136,0.3);
-  border-radius: 999px;
-  font-size: 0.75rem;
-  color: var(--green);
-}
-
-/* INTERACTIVE GAME */
-#interactive {
-  border-top: 1px solid var(--border);
-  padding-top: 6rem;
-  padding-bottom: 0;
-}
-
-.game-wrapper {
-  background: linear-gradient(135deg, rgba(0,229,255,0.05) 0%, rgba(0,255,136,0.05) 100%);
-  border: 1px solid rgba(0,229,255,0.2);
-  border-radius: 2rem;
-  padding: 2rem;
-  margin-top: 3rem;
-  overflow: hidden;
-}
-
-.game-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-.game-tab {
-  padding: 0.6rem 1.2rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  background: transparent;
-  transition: all 0.3s;
-}
-.game-tab.active {
-  background: linear-gradient(135deg, var(--ice), var(--green));
-  color: var(--dark);
-  border-color: transparent;
-  font-weight: 700;
-}
-
-.game-panel { display: none; }
-.game-panel.active { display: block; }
-
-/* TRASH GAME */
-.trash-game {
-  position: relative;
-  min-height: 400px;
-  background: linear-gradient(180deg, #1a3a2a 0%, #0f2a1a 100%);
-  border-radius: 1rem;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.game-score-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  background: rgba(0,0,0,0.3);
-}
-.game-score, .game-time {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
-  color: var(--ice);
-}
-.game-score span, .game-time span { color: var(--green); font-size: 1.5rem; }
-
-.game-area {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  min-height: 300px;
-}
-
-.trash-item {
-  position: absolute;
-  font-size: 2rem;
-  cursor: grab;
-  user-select: none;
-  transition: transform 0.2s;
-  animation: trashFall linear forwards;
-  touch-action: none;
-}
-.trash-item:hover { transform: scale(1.2); }
-@keyframes trashFall {
-  from { top: -50px; }
-  to { top: 110%; }
-}
-
-.bins {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: rgba(0,0,0,0.3);
-  flex-wrap: wrap;
-}
-.bin {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.8rem 1.2rem;
-  border-radius: 1rem;
-  border: 2px dashed;
-  transition: all 0.3s;
-  min-width: 70px;
-  cursor: none;
-}
-.bin-plastic { border-color: #4fc3f7; background: rgba(79,195,247,0.1); }
-.bin-organic { border-color: #81c784; background: rgba(129,199,132,0.1); }
-.bin-paper { border-color: #fff176; background: rgba(255,241,118,0.1); }
-.bin-metal { border-color: #ef9a9a; background: rgba(239,154,154,0.1); }
-.bin.highlight { transform: scale(1.1); box-shadow: 0 0 20px currentColor; }
-.bin-icon { font-size: 1.5rem; }
-.bin-label { font-size: 0.7rem; font-weight: 600; }
-.bin-plastic .bin-label { color: #4fc3f7; }
-.bin-organic .bin-label { color: #81c784; }
-.bin-paper .bin-label { color: #fff176; }
-.bin-metal .bin-label { color: #ef9a9a; }
-
-.game-msg {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: var(--green);
-  text-shadow: 0 0 20px var(--green);
-  pointer-events: none;
-  opacity: 0;
-  animation: msgPop 1s ease forwards;
-}
-@keyframes msgPop {
-  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-  50% { opacity: 1; transform: translate(-50%, -70%) scale(1.2); }
-  100% { opacity: 0; transform: translate(-50%, -80%) scale(1); }
-}
-
-.start-screen {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(5px);
-  gap: 1rem;
-  z-index: 5;
-}
-.start-screen h3 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  color: var(--green);
-}
-.start-screen p { font-size: 0.9rem; color: var(--muted); text-align: center; max-width: 280px; }
-
-.btn-game {
-  padding: 0.8rem 2rem;
-  background: linear-gradient(135deg, var(--green), var(--ice));
-  color: var(--dark);
-  border: none;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-.btn-game:hover { transform: scale(1.05); }
-
-/* PLANT GAME */
-.plant-game {
-  min-height: 350px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  padding: 2rem;
-}
-
-.plant-scene {
-  position: relative;
-  width: 200px;
-  height: 200px;
-}
-.plant-pot {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 3rem;
-}
-.plant-stem {
-  position: absolute;
-  bottom: 3.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 0;
-  background: #4caf50;
-  border-radius: 2px;
-  transition: height 1s ease;
-}
-.plant-leaf {
-  position: absolute;
-  font-size: 2rem;
-  opacity: 0;
-  transform: scale(0);
-  transition: all 0.5s ease;
-}
-.plant-leaf.visible { opacity: 1; transform: scale(1); }
-.plant-controls { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; }
-.plant-progress {
-  width: 250px;
-  height: 8px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.plant-progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--green), #8bc34a);
-  border-radius: 999px;
-  width: 0%;
-  transition: width 0.3s;
-}
-.plant-stage { font-size: 0.9rem; color: var(--green); font-weight: 600; }
-.plant-hint { font-size: 0.8rem; color: var(--muted); text-align: center; max-width: 260px; }
-
-/* QUIZ */
-.quiz-game {
-  padding: 1rem 0;
-}
-.quiz-question {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  line-height: 1.4;
-}
-.quiz-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  margin-bottom: 1.5rem;
-}
-.quiz-option {
-  padding: 0.9rem 1.3rem;
-  border: 1px solid var(--border);
-  border-radius: 0.8rem;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-size: 0.95rem;
-  background: var(--card-bg);
-  text-align: left;
-  color: var(--text);
-}
-.quiz-option:hover { border-color: var(--ice); color: var(--ice); }
-.quiz-option.correct { border-color: var(--green); background: rgba(0,255,136,0.1); color: var(--green); }
-.quiz-option.wrong { border-color: var(--fire); background: rgba(255,69,0,0.1); color: var(--fire); }
-.quiz-feedback {
-  padding: 1rem 1.3rem;
-  border-radius: 0.8rem;
-  font-size: 0.9rem;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-  display: none;
-}
-.quiz-feedback.show { display: block; }
-.quiz-feedback.correct-fb { background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.3); color: var(--green); }
-.quiz-feedback.wrong-fb { background: rgba(255,69,0,0.08); border: 1px solid rgba(255,69,0,0.3); color: #ff8a65; }
-.quiz-progress {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-bottom: 1rem;
-}
-.quiz-score-badge {
-  padding: 0.2rem 0.6rem;
-  background: rgba(0,229,255,0.1);
-  border: 1px solid rgba(0,229,255,0.3);
-  border-radius: 999px;
-  color: var(--ice);
-}
-.quiz-result {
-  text-align: center;
-  padding: 2rem;
-  display: none;
-}
-.quiz-result.show { display: block; }
-.quiz-result-score {
-  font-family: 'Playfair Display', serif;
-  font-size: 3rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--green), var(--ice));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.quiz-result-msg { color: var(--muted); margin: 1rem 0; }
-
-/* PLEDGE */
-#pledge {
-  text-align: center;
-  border-top: 1px solid var(--border);
-  padding-bottom: 6rem;
-}
-.pledge-counter {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(3rem, 8vw, 6rem);
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--green), var(--ice));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 1.5rem 0;
-}
-.pledge-input-wrapper {
-  display: flex;
-  gap: 1rem;
-  max-width: 500px;
-  margin: 2rem auto;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.pledge-input {
-  flex: 1;
-  min-width: 200px;
-  padding: 0.9rem 1.2rem;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem;
-  outline: none;
-  cursor: text;
-  transition: border-color 0.3s;
-}
-.pledge-input:focus { border-color: var(--green); }
-.pledge-input::placeholder { color: var(--muted); }
-.pledge-list {
-  max-width: 500px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-}
-.pledge-name {
-  padding: 0.5rem 1rem;
-  background: rgba(0,255,136,0.06);
-  border: 1px solid rgba(0,255,136,0.15);
-  border-radius: 999px;
-  font-size: 0.85rem;
-  color: var(--green);
-  animation: fadeSlideUp 0.5s ease;
-}
-
-/* FOOTER */
-footer {
-  background: var(--darker);
-  border-top: 1px solid var(--border);
-  padding: 3rem 2rem;
-  text-align: center;
-}
-.footer-logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  font-weight: 900;
-  background: linear-gradient(90deg, var(--fire), var(--gold));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 1rem;
-}
-.footer-text { font-size: 0.85rem; color: var(--muted); line-height: 1.7; max-width: 400px; margin: 0 auto 1.5rem; }
-.footer-quote {
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-size: 1rem;
-  color: rgba(255,255,255,0.3);
-}
-
-/* PROGRESS BAR TOP */
-.progress-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--fire), var(--gold));
-  z-index: 2000;
-  transition: width 0.1s;
-}
-
-/* BACK TO TOP */
-.back-top {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, var(--fire), var(--amber));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  cursor: pointer;
-  z-index: 900;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s;
-  box-shadow: 0 4px 20px rgba(255,69,0,0.4);
-  text-decoration: none;
-}
-.back-top.visible { opacity: 1; transform: translateY(0); }
-.back-top:hover { transform: translateY(-4px) scale(1.05); }
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .nav-links { display: none; }
-  .hamburger { display: flex; }
-  .earth-container { width: 80vw; opacity: 0.3; right: -20vw; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .causes-grid { grid-template-columns: 1fr; }
-  .actions-grid { grid-template-columns: 1fr; }
-  .hero-welcome { font-size: clamp(2.5rem, 10vw, 4rem); }
-  .bins { gap: 0.5rem; }
-  .bin { padding: 0.5rem 0.8rem; min-width: 60px; }
-  .chart-label { display: none; }
-}
-
-@media (max-width: 480px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-  .stat-num { font-size: 2rem; }
-  nav { padding: 1rem; }
-  .game-tabs { gap: 0.3rem; }
-  .game-tab { font-size: 0.75rem; padding: 0.5rem 0.8rem; }
-}
-
-/* GLOWING elements */
-.glow-fire { text-shadow: 0 0 30px rgba(255,69,0,0.6); }
-.glow-green { text-shadow: 0 0 30px rgba(0,255,136,0.6); }
-
-/* REVEAL animation */
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
-</style>
-</head>
-<body>
-
-<!-- CURSOR -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-trail" id="cursorTrail"></div>
-
-<!-- PROGRESS BAR -->
-<div class="progress-bar" id="progressBar"></div>
-
-<!-- NAV -->
-<nav>
-  <a href="#hero" class="nav-logo">🌍 Tabiat</a>
-  <ul class="nav-links">
-    <li><a href="#hero">Bosh sahifa</a></li>
-    <li><a href="#sabablari">Sabablar</a></li>
-    <li><a href="#oqibatlari">Oqibatlar</a></li>
-    <li><a href="#nima_qilish">Yechimlar</a></li>
-    <li><a href="#interactive">O'yinlar</a></li>
-    <li><a href="#pledge">Va'da</a></li>
-  </ul>
-  <div class="hamburger" id="hamburger">
-    <span></span><span></span><span></span>
-  </div>
-</nav>
-
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu">
-  <a href="#hero" onclick="closeMobileMenu()">🏠 Bosh sahifa</a>
-  <a href="#sabablari" onclick="closeMobileMenu()">🔥 Sabablar</a>
-  <a href="#oqibatlari" onclick="closeMobileMenu()">⚠️ Oqibatlar</a>
-  <a href="#nima_qilish" onclick="closeMobileMenu()">✅ Yechimlar</a>
-  <a href="#interactive" onclick="closeMobileMenu()">🎮 O'yinlar</a>
-  <a href="#pledge" onclick="closeMobileMenu()">🤝 Va'da</a>
-</div>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-bg"></div>
-  <div class="particles" id="particles"></div>
-  
-  <svg class="earth-container" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <radialGradient id="earthGrad" cx="40%" cy="40%">
-        <stop offset="0%" stop-color="#1a6b3c"/>
-        <stop offset="40%" stop-color="#0d4a6e"/>
-        <stop offset="100%" stop-color="#051a2e"/>
-      </radialGradient>
-      <filter id="glow">
-        <feGaussianBlur stdDeviation="4" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-    <circle cx="100" cy="100" r="90" fill="url(#earthGrad)" filter="url(#glow)"/>
-    <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(0,229,255,0.3)" stroke-width="2"/>
-    <!-- Continents simplified -->
-    <ellipse cx="80" cy="80" rx="25" ry="20" fill="rgba(34,139,34,0.7)" transform="rotate(-20,80,80)"/>
-    <ellipse cx="120" cy="90" rx="20" ry="15" fill="rgba(34,139,34,0.7)" transform="rotate(10,120,90)"/>
-    <ellipse cx="70" cy="130" rx="15" ry="25" fill="rgba(34,139,34,0.7)"/>
-    <ellipse cx="130" cy="120" rx="20" ry="12" fill="rgba(34,139,34,0.7)" transform="rotate(15,130,120)"/>
-    <!-- Fire overlay -->
-    <circle cx="100" cy="100" r="90" fill="rgba(255,69,0,0.08)"/>
-    <!-- Orbit ring -->
-    <ellipse cx="100" cy="100" rx="95" ry="30" fill="none" stroke="rgba(0,229,255,0.15)" stroke-width="1" transform="rotate(30,100,100)"/>
-  </svg>
-
-  <div class="hero-content">
-    <div class="welcome-tag">🌱 Ekologiya Platformasi</div>
-    <h1 class="hero-welcome">
-      <span class="line1">Xush kelibsiz!</span>
-      <span class="line2">Tabiatni birgalikda asraylik</span>
-    </h1>
-    <p class="hero-subtitle">
-      Iqlim o'zgarishi — bu haqiqat. Har bir yil sayyoramiz isib bormoqda. 
-      Biz birgalikda harakat qilsak, bu jarayonni to'xtatishimiz mumkin.
-    </p>
-    <div class="temp-badge">
-      <div class="temp-number">+1.2°C</div>
-      <div class="temp-info">
-        <strong style="color: var(--text);">Global harorat</strong><br>
-        Sanoat davridan beri o'rtacha ko'tarilish
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cho'llanish — Tabiatni Asraylik</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700;900&family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --sand: #d4a84b;
+        --sand2: #c17f34;
+        --rust: #a0522d;
+        --clay: #8b4513;
+        --sky: #87ceeb;
+        --oasis: #2e8b57;
+        --oasis2: #3cb371;
+        --dark: #0d0a06;
+        --darker: #080604;
+        --text: #f5edd8;
+        --muted: #9a8a6a;
+        --card: rgba(255, 255, 255, 0.04);
+        --border: rgba(212, 168, 75, 0.15);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--dark);
+        color: var(--text);
+        font-family: "Outfit", sans-serif;
+        overflow-x: hidden;
+        cursor: none;
+      }
+
+      /* ── SPLASH ── */
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: var(--darker);
+        overflow: hidden;
+        pointer-events: all;
+      }
+      .splash-desert {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse at 50% 100%,
+            rgba(212, 168, 75, 0.18) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 20% 80%,
+            rgba(160, 82, 45, 0.15) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 80% 70%,
+            rgba(193, 127, 52, 0.12) 0%,
+            transparent 50%
+          );
+      }
+      /* sand dunes SVG wave at bottom */
+      .splash-dune {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 35vh;
+        overflow: hidden;
+      }
+      .splash-dune svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      /* floating sand particles */
+      .sand-p {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(212, 168, 75, 0.5);
+        animation: sandDrift linear infinite;
+      }
+      @keyframes sandDrift {
+        0% {
+          transform: translateY(100vh) translateX(0) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.7;
+        }
+        90% {
+          opacity: 0.7;
+        }
+        100% {
+          transform: translateY(-10vh) translateX(40px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      /* WELCOME text */
+      .splash-welcome {
+        position: relative;
+        z-index: 2;
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(3.5rem, 12vw, 8rem);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        text-align: center;
+        background: linear-gradient(
+          135deg,
+          #f5edd8 0%,
+          var(--sand) 50%,
+          var(--sand2) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: splashIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        text-shadow: none;
+      }
+      .splash-sub {
+        position: relative;
+        z-index: 2;
+        font-size: clamp(0.85rem, 2vw, 1.1rem);
+        color: var(--muted);
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        margin-top: 1rem;
+        opacity: 0;
+        animation: fadeUp 0.8s ease 0.5s forwards;
+      }
+      /* sun behind text */
+      .splash-sun {
+        position: absolute;
+        top: 15%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: clamp(120px, 20vw, 220px);
+        height: clamp(120px, 20vw, 220px);
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          #ffe066 0%,
+          rgba(255, 140, 0, 0.6) 50%,
+          transparent 75%
+        );
+        animation: sunPulse 3s ease-in-out infinite;
+        z-index: 1;
+      }
+      @keyframes sunPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 60px 20px rgba(255, 180, 0, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 100px 40px rgba(255, 140, 0, 0.5);
+        }
+      }
+      @keyframes splashIn {
+        from {
+          opacity: 0;
+          transform: scale(0.7) translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* SPLASH transition states */
+      .splash-phase2 .splash-welcome {
+        animation: welcomeOut 0.7s cubic-bezier(0.4, 0, 1, 1) forwards;
+      }
+      .splash-phase2 .splash-sub {
+        animation: welcomeOut 0.5s ease 0.1s forwards;
+      }
+      @keyframes welcomeOut {
+        to {
+          opacity: 0;
+          transform: scale(0.8) translateY(-30px);
+        }
+      }
+      .splash-phase3 .new-text {
+        animation: newTextIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes newTextIn {
+        from {
+          opacity: 0;
+          transform: scale(0.85) translateY(25px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      .new-text {
+        position: absolute;
+        z-index: 3;
+        text-align: center;
+        padding: 0 1rem;
+        opacity: 0;
+      }
+      .new-text h2 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(1.8rem, 6vw, 4.2rem);
+        font-weight: 700;
+        background: linear-gradient(
+          135deg,
+          var(--oasis2),
+          var(--sand),
+          var(--oasis2)
+        );
+        background-size: 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmer 3s linear infinite;
+        line-height: 1.15;
+      }
+      @keyframes shimmer {
+        0% {
+          background-position: 0%;
+        }
+        100% {
+          background-position: 200%;
+        }
+      }
+      .new-text p {
+        font-size: clamp(0.8rem, 1.8vw, 1rem);
+        color: var(--muted);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-top: 0.8rem;
+      }
+      .splash-enter-btn {
+        margin-top: 2rem;
+        padding: 0.8rem 2.2rem;
+        background: linear-gradient(135deg, var(--oasis), var(--oasis2));
+        border: none;
+        border-radius: 999px;
+        font-family: "Outfit", sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #fff;
+        cursor: pointer;
+        opacity: 0;
+        transition: all 0.3s;
+        animation: fadeUp 0.8s ease 0.4s forwards;
+      }
+      .splash-enter-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 30px rgba(46, 139, 87, 0.4);
+      }
+
+      .splash-fade-out {
+        animation: splashFadeOut 0.9s ease forwards !important;
+      }
+      @keyframes splashFadeOut {
+        to {
+          opacity: 0;
+          pointer-events: none;
+        }
+      }
+
+      /* ── CURSOR ── */
+      .cursor {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background: var(--sand);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 10000;
+        mix-blend-mode: screen;
+        transition: transform 0.1s;
+      }
+      .cursor-ring {
+        position: fixed;
+        width: 30px;
+        height: 30px;
+        border: 1.5px solid rgba(212, 168, 75, 0.5);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        transition:
+          left 0.12s,
+          top 0.12s;
+      }
+
+      /* ── PROGRESS BAR ── */
+      #pgBar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--sand), var(--oasis2));
+        z-index: 5000;
+        transition: width 0.1s;
+      }
+
+      /* ── NAV ── */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        padding: 0.9rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(13, 10, 6, 0.88);
+        backdrop-filter: blur(18px);
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-logo {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--sand), var(--sand2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-decoration: none;
+      }
+      .nav-links {
+        display: flex;
+        gap: 1.8rem;
+        list-style: none;
+      }
+      .nav-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: color 0.3s;
+        cursor: none;
+      }
+      .nav-links a:hover {
+        color: var(--sand);
+      }
+
+      /* hamburger */
+      .hbg {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        padding: 4px;
+        z-index: 1001;
+      }
+      .hbg span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background: var(--text);
+        transition: all 0.3s;
+        border-radius: 2px;
+      }
+      .hbg.open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+      .hbg.open span:nth-child(2) {
+        opacity: 0;
+      }
+      .hbg.open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+
+      /* mobile full-screen menu */
+      .mob-menu {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: var(--darker);
+        z-index: 999;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2.5rem;
+      }
+      .mob-menu.open {
+        display: flex;
+      }
+      .mob-menu a {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text);
+        text-decoration: none;
+        opacity: 0;
+        transform: translateY(25px);
+        transition: all 0.4s;
+      }
+      .mob-menu.open a {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .mob-menu.open a:nth-child(1) {
+        transition-delay: 0.08s;
+      }
+      .mob-menu.open a:nth-child(2) {
+        transition-delay: 0.16s;
+      }
+      .mob-menu.open a:nth-child(3) {
+        transition-delay: 0.24s;
+      }
+      .mob-menu.open a:nth-child(4) {
+        transition-delay: 0.32s;
+      }
+      .mob-menu.open a:nth-child(5) {
+        transition-delay: 0.4s;
+      }
+      .mob-menu.open a:nth-child(6) {
+        transition-delay: 0.48s;
+      }
+      .mob-menu a:hover {
+        color: var(--sand);
+      }
+
+      /* ── HERO ── */
+      #hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        padding: 7rem 2rem 5rem;
+      }
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse at 25% 60%,
+            rgba(212, 168, 75, 0.12) 0%,
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse at 75% 30%,
+            rgba(160, 82, 45, 0.08) 0%,
+            transparent 50%
+          );
+      }
+      /* Animated sand waves */
+      .hero-dunes {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 250px;
+        overflow: hidden;
+      }
+      .hero-dunes svg {
+        width: 100%;
+        height: 100%;
+        animation: duneShift 20s ease-in-out infinite alternate;
+      }
+      @keyframes duneShift {
+        from {
+          transform: translateX(-2%);
+        }
+        to {
+          transform: translateX(2%);
+        }
+      }
+      /* sun */
+      .hero-sun {
+        position: absolute;
+        top: 8%;
+        right: 8%;
+        width: clamp(100px, 18vw, 200px);
+        height: clamp(100px, 18vw, 200px);
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 220, 80, 0.9) 0%,
+          rgba(255, 140, 0, 0.5) 50%,
+          transparent 72%
+        );
+        animation: sunPulse 4s ease-in-out infinite;
+      }
+      /* cracked earth overlay */
+      .crack-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 45%;
+        background:
+          repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 60px,
+            rgba(139, 69, 19, 0.04) 60px,
+            rgba(139, 69, 19, 0.04) 61px
+          ),
+          repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 80px,
+            rgba(160, 82, 45, 0.03) 80px,
+            rgba(160, 82, 45, 0.03) 81px
+          );
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 680px;
+      }
+      .hero-tag {
+        display: inline-block;
+        padding: 0.35rem 1rem;
+        border: 1px solid rgba(212, 168, 75, 0.4);
+        border-radius: 999px;
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--sand);
+        margin-bottom: 1.5rem;
+        animation: fadeUp 0.8s ease 0.2s both;
+      }
+      .hero-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(3rem, 7vw, 5.5rem);
+        font-weight: 900;
+        line-height: 1.05;
+        margin-bottom: 1.2rem;
+        animation: fadeUp 0.8s ease 0.3s both;
+      }
+      .hero-title .t1 {
+        display: block;
+        background: linear-gradient(
+          135deg,
+          var(--text) 0%,
+          var(--sand) 60%,
+          var(--sand2) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero-title .t2 {
+        display: block;
+        font-size: 0.45em;
+        font-weight: 400;
+        color: var(--muted);
+        -webkit-text-fill-color: var(--muted);
+        margin-top: 0.4rem;
+        letter-spacing: 0.02em;
+      }
+      .hero-body {
+        font-size: 1rem;
+        color: var(--muted);
+        line-height: 1.8;
+        max-width: 520px;
+        margin-bottom: 2rem;
+        animation: fadeUp 0.8s ease 0.4s both;
+      }
+      .stat-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.9rem;
+        background: rgba(212, 168, 75, 0.08);
+        border: 1px solid rgba(212, 168, 75, 0.25);
+        border-radius: 1rem;
+        padding: 0.9rem 1.4rem;
+        margin-bottom: 2rem;
+        animation: fadeUp 0.8s ease 0.5s both;
+      }
+      .stat-pill-num {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--sand);
+        animation: sandGlow 2.5s ease-in-out infinite;
+      }
+      @keyframes sandGlow {
+        0%,
+        100% {
+          text-shadow: 0 0 15px rgba(212, 168, 75, 0.4);
+        }
+        50% {
+          text-shadow: 0 0 35px rgba(212, 168, 75, 0.8);
+        }
+      }
+      .stat-pill-info {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .hero-btns {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        animation: fadeUp 0.8s ease 0.6s both;
+      }
+      .btn {
+        padding: 0.85rem 1.8rem;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        text-decoration: none;
+        cursor: none;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        border: none;
+      }
+      .btn-sand {
+        background: linear-gradient(135deg, var(--sand), var(--sand2));
+        color: #fff;
+        box-shadow: 0 6px 25px rgba(212, 168, 75, 0.3);
+      }
+      .btn-sand:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 35px rgba(212, 168, 75, 0.5);
+      }
+      .btn-ghost {
+        border: 1px solid var(--border);
+        color: var(--text);
+        background: transparent;
+      }
+      .btn-ghost:hover {
+        border-color: var(--sand);
+        color: var(--sand);
+      }
+      .scroll-hint {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.7rem;
+        color: var(--muted);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        animation: fadeUp 0.8s ease 1s both;
+      }
+      .scroll-line {
+        width: 1px;
+        height: 45px;
+        background: linear-gradient(to bottom, var(--muted), transparent);
+        animation: scrollBlink 2s ease-in-out infinite;
+      }
+      @keyframes scrollBlink {
+        0%,
+        100% {
+          opacity: 0.4;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(25px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── STATS BAND ── */
+      .stats-band {
+        padding: 3.5rem 2rem;
+        background: linear-gradient(
+          135deg,
+          rgba(212, 168, 75, 0.06) 0%,
+          rgba(160, 82, 45, 0.06) 100%
+        );
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+      .stats-grid {
+        max-width: 960px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+        text-align: center;
+      }
+      .s-num {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 2.6rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--sand), var(--rust));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .s-lbl {
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-top: 0.3rem;
+      }
+
+      /* ── SECTION BASE ── */
+      .sec {
+        padding: 6rem 2rem;
+        max-width: 1080px;
+        margin: 0 auto;
+      }
+      .sec-full {
+        padding: 6rem 2rem;
+        border-top: 1px solid var(--border);
+      }
+      .sec-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+      }
+      .sec-label {
+        display: inline-block;
+        font-size: 0.72rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--sand);
+        margin-bottom: 0.9rem;
+        font-weight: 600;
+      }
+      .sec-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(2rem, 4.5vw, 3.2rem);
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 1.3rem;
+      }
+      .sec-body {
+        font-size: 1rem;
+        color: var(--muted);
+        line-height: 1.85;
+        max-width: 620px;
+      }
+
+      /* ── CARDS ── */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+        gap: 1.4rem;
+        margin-top: 3rem;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 1.4rem;
+        padding: 1.8rem;
+        position: relative;
+        overflow: hidden;
+        cursor: none;
+        transition:
+          transform 0.4s,
+          border-color 0.4s;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at 50% 0%,
+          rgba(212, 168, 75, 0.09) 0%,
+          transparent 65%
+        );
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(212, 168, 75, 0.4);
+      }
+      .card:hover::before {
+        opacity: 1;
+      }
+      .card-icon {
+        font-size: 2.4rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+      .card-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 0.6rem;
+        color: var(--text);
+      }
+      .card-text {
+        font-size: 0.88rem;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+      .card-badge {
+        display: inline-block;
+        margin-top: 0.9rem;
+        padding: 0.25rem 0.75rem;
+        background: rgba(46, 139, 87, 0.12);
+        border: 1px solid rgba(46, 139, 87, 0.3);
+        border-radius: 999px;
+        font-size: 0.72rem;
+        color: var(--oasis2);
+      }
+
+      /* ── TIMELINE ── */
+      .timeline {
+        position: relative;
+        padding-left: 2rem;
+        margin-top: 3rem;
+      }
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: linear-gradient(
+          to bottom,
+          var(--sand),
+          var(--sand2),
+          transparent
+        );
+      }
+      .tl-item {
+        position: relative;
+        padding: 0 0 2.5rem 2rem;
+        opacity: 0;
+        transform: translateX(-18px);
+        transition: all 0.65s ease;
+      }
+      .tl-item.visible {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .tl-dot {
+        position: absolute;
+        left: -2.35rem;
+        top: 0.35rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--sand);
+        box-shadow: 0 0 12px var(--sand);
+      }
+      .tl-year {
+        font-size: 0.72rem;
+        color: var(--sand);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin-bottom: 0.35rem;
+        font-weight: 600;
+      }
+      .tl-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 0.45rem;
+      }
+      .tl-text {
+        font-size: 0.88rem;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      /* ── SAND PROGRESS ── */
+      .sand-meter {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 1.4rem;
+        padding: 2.5rem;
+        margin-top: 3rem;
+      }
+      .meter-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+      }
+      .meter-row {
+        margin-bottom: 1.3rem;
+      }
+      .meter-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .meter-track {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .meter-fill {
+        height: 100%;
+        border-radius: 999px;
+        width: 0;
+        transition: width 1.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+      }
+      .fill-sand {
+        background: linear-gradient(90deg, var(--sand2), var(--sand));
+      }
+      .fill-rust {
+        background: linear-gradient(90deg, var(--clay), var(--rust));
+      }
+      .fill-green {
+        background: linear-gradient(90deg, #1a7a40, var(--oasis2));
+      }
+
+      /* ── MAP INTERACTIVE ── */
+      .uz-map-section {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 1.4rem;
+        padding: 2rem;
+        margin-top: 3rem;
+        overflow: hidden;
+      }
+      .uz-map-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .uz-map-sub {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+      }
+      .map-canvas {
+        width: 100%;
+        height: 280px;
+        position: relative;
+        background: linear-gradient(
+          135deg,
+          #1a2f1c 0%,
+          #0f2010 40%,
+          #2c1a0a 60%,
+          #3d2208 100%
+        );
+        border-radius: 1rem;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .region {
+        position: absolute;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.7rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 4px;
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .region:hover {
+        transform: scale(1.08);
+        z-index: 5;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      }
+      .region-tooltip {
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(13, 10, 6, 0.95);
+        border: 1px solid var(--border);
+        border-radius: 0.6rem;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 10;
+        color: var(--text);
+      }
+      .region:hover .region-tooltip {
+        opacity: 1;
+      }
+
+      /* ── GAME SECTION ── */
+      .game-wrap {
+        background: linear-gradient(
+          135deg,
+          rgba(46, 139, 87, 0.06) 0%,
+          rgba(212, 168, 75, 0.06) 100%
+        );
+        border: 1px solid rgba(46, 139, 87, 0.2);
+        border-radius: 1.6rem;
+        padding: 1.8rem;
+        margin-top: 3rem;
+      }
+      .game-tabs {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.8rem;
+      }
+      .g-tab {
+        padding: 0.55rem 1.1rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        background: transparent;
+        transition: all 0.3s;
+        font-family: "Outfit", sans-serif;
+      }
+      .g-tab.active {
+        background: linear-gradient(135deg, var(--oasis), var(--oasis2));
+        color: #fff;
+        border-color: transparent;
+        font-weight: 700;
+      }
+      .g-panel {
+        display: none;
+      }
+      .g-panel.active {
+        display: block;
+      }
+
+      /* TREE PLANTING GAME */
+      .tree-game {
+        min-height: 380px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+      }
+      .tree-field {
+        width: 100%;
+        max-width: 600px;
+        min-height: 220px;
+        background: linear-gradient(
+          180deg,
+          #1a3c2a 0%,
+          #0f2518 40%,
+          #2d1a05 100%
+        );
+        border-radius: 1rem;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(46, 139, 87, 0.3);
+      }
+      .field-ground {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 35%;
+        background: linear-gradient(180deg, #3d2005 0%, #2a1503 100%);
+      }
+      .tree-obj {
+        position: absolute;
+        bottom: 35%;
+        font-size: 2.5rem;
+        animation: treeGrow 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+        cursor: none;
+        transition: transform 0.2s;
+      }
+      .tree-obj:hover {
+        transform: scale(1.15) translateY(-4px);
+      }
+      @keyframes treeGrow {
+        from {
+          transform: scale(0) translateY(30px);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .sand-patch {
+        position: absolute;
+        bottom: 35%;
+        font-size: 1.8rem;
+        animation: sandIn 0.4s ease forwards;
+        opacity: 0.7;
+      }
+      @keyframes sandIn {
+        from {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        to {
+          opacity: 0.7;
+          transform: scale(1);
+        }
+      }
+      .tree-ui {
+        text-align: center;
+        width: 100%;
+        max-width: 400px;
+      }
+      .tree-score-row {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+      .t-score {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+      .t-score span {
+        display: block;
+        font-family: "Outfit", sans-serif;
+        font-size: 0.7rem;
+        color: var(--muted);
+        font-weight: 400;
+      }
+      .tree-progress {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+      }
+      .tree-prog-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--oasis), var(--oasis2));
+        width: 0;
+        transition: width 0.4s;
+      }
+      .tree-hint {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-bottom: 1rem;
+      }
+      .tree-field-click-zone {
+        position: absolute;
+        inset: 0;
+        cursor: pointer;
+        z-index: 2;
+      }
+      .tree-controls {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      /* WATER SAVER */
+      .water-game {
+        padding: 0.5rem 0;
+      }
+      .water-scenario {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .ws-q {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+      .ws-opts {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+      .ws-opt {
+        padding: 0.8rem 1.2rem;
+        border: 1px solid var(--border);
+        border-radius: 0.7rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        background: var(--card);
+        color: var(--text);
+        text-align: left;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.3s;
+      }
+      .ws-opt:hover {
+        border-color: var(--oasis2);
+        color: var(--oasis2);
+      }
+      .ws-opt.good {
+        border-color: var(--oasis2);
+        background: rgba(46, 139, 87, 0.1);
+        color: var(--oasis2);
+      }
+      .ws-opt.bad {
+        border-color: var(--rust);
+        background: rgba(160, 82, 45, 0.1);
+        color: #e07050;
+      }
+      .ws-fb {
+        padding: 0.9rem 1.2rem;
+        border-radius: 0.7rem;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin-top: 0.8rem;
+        display: none;
+      }
+      .ws-fb.show {
+        display: block;
+      }
+      .ws-fb.ok {
+        background: rgba(46, 139, 87, 0.08);
+        border: 1px solid rgba(46, 139, 87, 0.3);
+        color: var(--oasis2);
+      }
+      .ws-fb.ng {
+        background: rgba(160, 82, 45, 0.08);
+        border: 1px solid rgba(160, 82, 45, 0.3);
+        color: #e07050;
+      }
+      .water-score-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 0.8rem;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+      }
+      .ws-score-val {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--oasis2);
+      }
+
+      /* QUIZ */
+      .quiz-wrap {
+        padding: 0.5rem 0;
+      }
+      .q-prog {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .q-score-badge {
+        padding: 0.2rem 0.7rem;
+        border-radius: 999px;
+        background: rgba(212, 168, 75, 0.1);
+        border: 1px solid rgba(212, 168, 75, 0.3);
+        color: var(--sand);
+      }
+      .q-text {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        line-height: 1.4;
+        margin-bottom: 1.3rem;
+      }
+      .q-opts {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+        margin-bottom: 1rem;
+      }
+      .q-opt {
+        padding: 0.85rem 1.2rem;
+        border: 1px solid var(--border);
+        border-radius: 0.8rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        background: var(--card);
+        color: var(--text);
+        text-align: left;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.3s;
+      }
+      .q-opt:hover {
+        border-color: var(--sand);
+        color: var(--sand);
+      }
+      .q-opt.ok {
+        border-color: var(--oasis2);
+        background: rgba(46, 139, 87, 0.1);
+        color: var(--oasis2);
+      }
+      .q-opt.err {
+        border-color: var(--rust);
+        background: rgba(160, 82, 45, 0.1);
+        color: #e07050;
+      }
+      .q-fb {
+        padding: 0.9rem 1.2rem;
+        border-radius: 0.8rem;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        display: none;
+      }
+      .q-fb.show {
+        display: block;
+      }
+      .q-fb.ok {
+        background: rgba(46, 139, 87, 0.08);
+        border: 1px solid rgba(46, 139, 87, 0.3);
+        color: var(--oasis2);
+      }
+      .q-fb.err {
+        background: rgba(160, 82, 45, 0.08);
+        border: 1px solid rgba(160, 82, 45, 0.3);
+        color: #e07050;
+      }
+      .q-result {
+        text-align: center;
+        padding: 2rem;
+        display: none;
+      }
+      .q-result.show {
+        display: block;
+      }
+      .q-result-num {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 4rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--oasis2), var(--sand));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .q-result-msg {
+        color: var(--muted);
+        margin: 1rem 0;
+      }
+
+      /* ── PLEDGE ── */
+      #pledge {
+        text-align: center;
+        padding: 6rem 2rem;
+        border-top: 1px solid var(--border);
+      }
+      .pledge-big {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(4rem, 10vw, 7rem);
+        font-weight: 900;
+        background: linear-gradient(
+          135deg,
+          var(--oasis2),
+          var(--sand),
+          var(--oasis2)
+        );
+        background-size: 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmer 4s linear infinite;
+        margin: 1.2rem 0;
+      }
+      .pledge-row {
+        display: flex;
+        gap: 0.8rem;
+        max-width: 480px;
+        margin: 1.8rem auto;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .pledge-inp {
+        flex: 1;
+        min-width: 180px;
+        padding: 0.85rem 1.2rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--text);
+        font-family: "Outfit", sans-serif;
+        font-size: 0.88rem;
+        outline: none;
+        cursor: text;
+        transition: border-color 0.3s;
+      }
+      .pledge-inp:focus {
+        border-color: var(--oasis2);
+      }
+      .pledge-inp::placeholder {
+        color: var(--muted);
+      }
+      .pledge-list {
+        max-width: 480px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+      .pledge-name {
+        padding: 0.45rem 1rem;
+        background: rgba(46, 139, 87, 0.07);
+        border: 1px solid rgba(46, 139, 87, 0.2);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        color: var(--oasis2);
+        animation: fadeUp 0.5s ease;
+      }
+
+      /* ── BACK TOP ── */
+      .back-top {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--sand2), var(--sand));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        text-decoration: none;
+        cursor: pointer;
+        z-index: 900;
+        opacity: 0;
+        transform: translateY(16px);
+        transition: all 0.3s;
+        box-shadow: 0 4px 18px rgba(212, 168, 75, 0.35);
+        color: #fff;
+      }
+      .back-top.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .back-top:hover {
+        transform: translateY(-4px) scale(1.06);
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        background: var(--darker);
+        border-top: 1px solid var(--border);
+        padding: 3rem 2rem;
+        text-align: center;
+      }
+      .ft-logo {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--sand), var(--sand2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.9rem;
+      }
+      .ft-text {
+        font-size: 0.85rem;
+        color: var(--muted);
+        line-height: 1.7;
+        max-width: 400px;
+        margin: 0 auto 1.2rem;
+      }
+      .ft-quote {
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.25);
+      }
+
+      /* ── REVEAL ── */
+      .reveal {
+        opacity: 0;
+        transform: translateY(35px);
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+        .hbg {
+          display: flex;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .cards {
+          grid-template-columns: 1fr;
+        }
+        .hero-sun {
+          width: 80px;
+          height: 80px;
+          top: 12%;
+          right: 4%;
+        }
+        .hero-dunes {
+          height: 150px;
+        }
+      }
+      @media (max-width: 480px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+        }
+        .s-num {
+          font-size: 2rem;
+        }
+        nav {
+          padding: 0.8rem 1rem;
+        }
+        .sec {
+          padding: 4rem 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════════════ SPLASH SCREEN ═══════════════ -->
+    <div id="splash">
+      <div class="splash-desert"></div>
+      <div class="splash-sun"></div>
+
+      <!-- sand particles -->
+      <div id="splashParticles"></div>
+
+      <!-- dune silhouette -->
+      <div class="splash-dune">
+        <svg
+          viewBox="0 0 1440 250"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M0,180 C200,80 400,250 720,130 C900,60 1100,200 1440,100 L1440,250 L0,250 Z"
+            fill="rgba(139,69,19,0.35)"
+          />
+          <path
+            d="M0,220 C300,140 600,260 900,180 C1100,120 1300,230 1440,160 L1440,250 L0,250 Z"
+            fill="rgba(101,50,10,0.5)"
+          />
+        </svg>
+      </div>
+
+      <!-- Phase 1: Welcome -->
+      <div class="splash-welcome" id="sw">Xush kelibsiz!</div>
+      <div class="splash-sub" id="ss">🌿 Tabiat platformasiga</div>
+
+      <!-- Phase 2: New motto (hidden initially) -->
+      <div class="new-text" id="newText">
+        <h2>Tabiatni birgalikda asraylik</h2>
+        <p>🌱 Cho'llanishga qarshi birgalikda kurashaylik</p>
+        <button class="splash-enter-btn" id="enterBtn">Saytga kirish →</button>
       </div>
     </div>
-    <div class="hero-btns">
-      <a href="#sabablari" class="btn btn-fire">🔍 Ko'proq bilish</a>
-      <a href="#interactive" class="btn btn-outline">🎮 O'yin o'ynash</a>
-    </div>
-  </div>
-  
-  <div class="scroll-indicator">
-    <span>Pastga aylantiring</span>
-    <div class="scroll-line"></div>
-  </div>
-</section>
 
-<!-- STATS BAND -->
-<div class="stats-band reveal">
-  <div class="stats-grid">
-    <div class="stat-item">
-      <div class="stat-num" data-count="420">0</div>
-      <div class="stat-label">CO₂ ppm (2024)</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" data-count="1" data-suffix="°C">0</div>
-      <div class="stat-label">Harorat ko'tarilishi</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" data-count="8" data-suffix="mln">0</div>
-      <div class="stat-label">Chiqindi mln/yil</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" data-count="15">0</div>
-      <div class="stat-label">% Muzliklar erigan</div>
-    </div>
-  </div>
-</div>
+    <!-- ═══════════════ CURSOR ═══════════════ -->
+    <div class="cursor" id="cur"></div>
+    <div class="cursor-ring" id="curR"></div>
 
-<!-- CAUSES -->
-<section id="sabablari">
-  <div class="reveal">
-    <span class="section-label">🔥 Asosiy muammo</span>
-    <h2 class="section-title">Iqlim o'zgarishining<br>sabablari nima?</h2>
-    <p class="section-body">
-      Global isish asosan inson faoliyati natijasida yuzaga keladi. 
-      Issiqxona gazlarining atmosferaga chiqarilishi sayyoramizning tabiiy harorat balansini buzmoqda.
-    </p>
-  </div>
-  
-  <div class="causes-grid">
-    <div class="cause-card reveal">
-      <span class="cause-icon">🏭</span>
-      <h3 class="cause-title">Sanoat emissiyalari</h3>
-      <p class="cause-text">Zavodlar, elektrostansiyalar va ishlab chiqarish korxonalari yiliga milliardlab tonna CO₂ atmosferaga chiqaradi. Bu global isishning 25% ini tashkil etadi.</p>
-    </div>
-    <div class="cause-card reveal">
-      <span class="cause-icon">🚗</span>
-      <h3 class="cause-title">Transport</h3>
-      <p class="cause-text">Avtomobillar, samolyotlar va kemalar yoqilg'i yoqib, atmosferaga katta miqdorda CO₂ va boshqa issiqxona gazlarini chiqaradi. Transport global emissiyaning 16%ini egallaydi.</p>
-    </div>
-    <div class="cause-card reveal">
-      <span class="cause-icon">🌲</span>
-      <h3 class="cause-title">O'rmonlarning kesilishi</h3>
-      <p class="cause-text">Har yil 15 milliard daraxt kesiladi. O'rmonlar CO₂ ni yutishi o'rniga, ularni yo'qotish atmosferaga ko'proq karbonat angidrid chiqaradi.</p>
-    </div>
-    <div class="cause-card reveal">
-      <span class="cause-icon">🌾</span>
-      <h3 class="cause-title">Qishloq xo'jaligi</h3>
-      <p class="cause-text">Chorvachilik metan gazi, o'g'it ishlatish esa azot oksidini hosil qiladi. Bu gazlar CO₂ dan ham kuchliroq issiqxona effektini yaratadi.</p>
-    </div>
-    <div class="cause-card reveal">
-      <span class="cause-icon">🗑️</span>
-      <h3 class="cause-title">Chiqindilar</h3>
-      <p class="cause-text">Poligonlardagi organik chiqindilar chirishi natijasida metan gazi hosil bo'ladi. Plastik chiqindilar yuz yillar davomida parchalanmay qoladi.</p>
-    </div>
-    <div class="cause-card reveal">
-      <span class="cause-icon">⚡</span>
-      <h3 class="cause-title">Energetika</h3>
-      <p class="cause-text">Ko'mir, neft va tabiiy gaz asosida ishlaydigan elektrostansiyalar global issiqxona gazlarining eng katta manbai hisoblanadi — bu 73%ni tashkil etadi.</p>
-    </div>
-  </div>
+    <!-- PROGRESS -->
+    <div id="pgBar"></div>
 
-  <!-- CO2 METER -->
-  <div class="co2-section reveal">
-    <h3 class="section-title" style="font-size: 1.5rem;">Atmosferadagi CO₂ miqdori</h3>
-    <p class="section-body" style="margin: 0 auto; text-align: center;">
-      1850-yildan beri CO₂ darajasi 280 ppm dan 420 ppm ga oshdi
-    </p>
-    <div class="co2-meter">
-      <svg width="200" height="200" viewBox="0 0 200 200">
-        <defs>
-          <linearGradient id="fireGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#FF4500"/>
-            <stop offset="100%" stop-color="#FFD700"/>
-          </linearGradient>
-        </defs>
-        <circle class="track" cx="100" cy="100" r="80"/>
-        <circle class="progress" cx="100" cy="100" r="80" id="co2Progress"/>
-      </svg>
-      <div class="co2-center">
-        <div class="co2-value" id="co2Val">0</div>
-        <div class="co2-unit">ppm CO₂</div>
+    <!-- ═══════════════ NAV ═══════════════ -->
+    <nav>
+      <a href="#hero" class="nav-logo">🏜️ Cho'llanish</a>
+      <ul class="nav-links">
+        <li><a href="#hero">Bosh sahifa</a></li>
+        <li><a href="#nima">Nima bu?</a></li>
+        <li><a href="#sabab">Sabablar</a></li>
+        <li><a href="#oqibat">Oqibatlar</a></li>
+        <li><a href="#yechim">Yechimlar</a></li>
+        <li><a href="#game">O'yinlar</a></li>
+        <li><a href="#pledge">Va'da</a></li>
+      </ul>
+      <div class="hbg" id="hbg"><span></span><span></span><span></span></div>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div class="mob-menu" id="mobMenu">
+      <a href="#hero" onclick="closeM()">🏠 Bosh sahifa</a>
+      <a href="#nima" onclick="closeM()">❓ Cho'llanish nima?</a>
+      <a href="#sabab" onclick="closeM()">🌡️ Sabablar</a>
+      <a href="#oqibat" onclick="closeM()">⚠️ Oqibatlar</a>
+      <a href="#yechim" onclick="closeM()">✅ Yechimlar</a>
+      <a href="#game" onclick="closeM()">🎮 O'yinlar</a>
+      <a href="#pledge" onclick="closeM()">🤝 Va'da</a>
+    </div>
+
+    <!-- ═══════════════ HERO ═══════════════ -->
+    <section id="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-sun"></div>
+      <div class="crack-overlay"></div>
+
+      <!-- Sand dunes animation -->
+      <div class="hero-dunes">
+        <svg
+          viewBox="0 0 1440 250"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M0,160 C300,60 600,220 900,100 C1100,30 1300,180 1440,80 L1440,250 L0,250 Z"
+            fill="rgba(139,69,19,0.25)"
+          />
+          <path
+            d="M0,200 C200,130 500,250 800,160 C1050,90 1250,210 1440,140 L1440,250 L0,250 Z"
+            fill="rgba(101,50,10,0.4)"
+          />
+        </svg>
       </div>
-    </div>
-    <p style="font-size: 0.85rem; color: var(--muted);">Xavfsiz chegara: 350 ppm — Hozirgi daraja: <span style="color: var(--fire); font-weight: 700;">420 ppm</span></p>
-  </div>
-</section>
 
-<!-- CONSEQUENCES -->
-<section id="oqibatlari">
-  <div class="reveal">
-    <span class="section-label">⚠️ Xavfli oqibatlar</span>
-    <h2 class="section-title">Iqlim o'zgarishi<br>nimalarga olib keladi?</h2>
-    <p class="section-body">Agar biz hech narsa qilmasak, sayyoramiz shu quyidagi xavfli oqibatlarga duch keladi:</p>
-  </div>
-
-  <div class="timeline reveal">
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-year">Hozir — 2030</div>
-      <h3 class="timeline-title">🌊 Dengiz sathi ko'tarilishi</h3>
-      <p class="timeline-text">Muzliklar erishi natijasida dengiz sathlari ko'tarilmoqda. 2050 yilga kelib, dengiz sathi 20–40 sm ga oshishi kutilmoqda, bu millionlab odamlarni suvga bostirib qo'yishi mumkin.</p>
-    </div>
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-year">2030 — 2050</div>
-      <h3 class="timeline-title">🔥 Ekstremal ob-havo</h3>
-      <p class="timeline-text">Qurg'oqchiliklar, sel va to'fon sonining oshishi. O'rmon yong'inlari yanada kuchliroq bo'ladi. Issiq to'lqinlar yanada tez-tez va kuchliroq sodir bo'ladi.</p>
-    </div>
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-year">2050 — 2100</div>
-      <h3 class="timeline-title">🐾 Biologik xilma-xillik yo'qolishi</h3>
-      <p class="timeline-text">1 milliondan ortiq tur o'simlik va hayvon yo'q bo'lib ketish xavfi ostida. Marjon reeflarining 90%i nobud bo'lishi mumkin. Oziq-ovqat zanjiri buziladi.</p>
-    </div>
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-year">2100+</div>
-      <h3 class="timeline-title">😰 Inson hayotiga tahdid</h3>
-      <p class="timeline-text">Milliardlab odamlar o'z uylarini tark etishga majbur bo'ladi. Oziq-ovqat va suv tanqisligi kuchayadi. Iqtisodiy zarar yiliga trilliardlab dollarga yetadi.</p>
-    </div>
-  </div>
-
-  <!-- CHART -->
-  <div class="chart-container reveal">
-    <div class="chart-title">🌡️ Global harorat o'zgarishi (1900 — 2024)</div>
-    <div class="chart" id="tempChart"></div>
-    <div class="chart-labels" id="chartLabels"></div>
-  </div>
-</section>
-
-<!-- WHAT TO DO -->
-<section id="nima_qilish">
-  <div class="reveal">
-    <span class="section-label">✅ Yechimlar</span>
-    <h2 class="section-title">Biz nima qilishimiz<br>kerak?</h2>
-    <p class="section-body">
-      Iqlim o'zgarishiga qarshi kurashda har birimizning hissasi muhim. 
-      Kichik o'zgarishlar ulkan natijalar beradi.
-    </p>
-  </div>
-
-  <div class="actions-grid">
-    <div class="action-card reveal">
-      <span class="action-icon">☀️</span>
-      <h3 class="action-title">Qayta tiklanadigan energiya</h3>
-      <p class="action-text">Quyosh va shamol energiyasiga o'tish. Uyda quyosh panellari o'rnatish. Elektr avtomobillarga o'tish. Bu CO₂ emissiyani 70% ga kamaytiradi.</p>
-      <span class="action-impact">⚡ Yuqori ta'sir</span>
-    </div>
-    <div class="action-card reveal">
-      <span class="action-icon">🌱</span>
-      <h3 class="action-title">Daraxt ekish</h3>
-      <p class="action-text">Bitta daraxt yiliga 21 kg CO₂ yutadi. Bir inson umri davomida 1000 ta daraxt eksa, 21 tonna CO₂ ni atmosferadan olib tashlaydi.</p>
-      <span class="action-impact">🌿 O'rta ta'sir</span>
-    </div>
-    <div class="action-card reveal">
-      <span class="action-icon">♻️</span>
-      <h3 class="action-title">Chiqindilarni kamaytirish</h3>
-      <p class="action-text">Qayta ishlash, kamroq plastik ishlatish, kompost qilish. Chiqindilarni to'g'ri ajratish poligon gazlarini 50% ga kamaytiradi.</p>
-      <span class="action-impact">🗑️ Muhim qadam</span>
-    </div>
-    <div class="action-card reveal">
-      <span class="action-icon">🚲</span>
-      <h3 class="action-title">Ekologik transport</h3>
-      <p class="action-text">Velosiped, piyoda yurish yoki jamoat transportidan foydalanish. Bir yil avtomobil o'rniga velosipedda yurish 1.5 tonna CO₂ ni tejaydi.</p>
-      <span class="action-impact">🌍 Kunlik ta'sir</span>
-    </div>
-    <div class="action-card reveal">
-      <span class="action-icon">🥦</span>
-      <h3 class="action-title">O'simlik asosli ovqat</h3>
-      <p class="action-text">Bir kishi go'shtni o'simlik ovqatiga almashtirganda yiliga 1.5 tonna CO₂ emissiyani kamaytiradi. Oziq-ovqat isrofini kamaytirish ham muhim.</p>
-      <span class="action-impact">🍃 Katta ta'sir</span>
-    </div>
-    <div class="action-card reveal">
-      <span class="action-icon">💡</span>
-      <h3 class="action-title">Energiya tejash</h3>
-      <p class="action-text">LED lampalar, energiya tejovchi jihozlar, termostat nazorati. Uyingizda energiyani 30% tejash mumkin. Bu yiliga 700 kg CO₂ ga teng.</p>
-      <span class="action-impact">⚡ Oson boshlash</span>
-    </div>
-    <div class="action-card reveal">
-      <span class="action-icon">📢</span>
-      <h3 class="action-title">Jamoat faoliyati</h3>
-      <p class="action-text">Ekologik harakatlarda qatnashish, do'stlaringizga ta'lim berish, mahalliy hokimiyatdan ekologik qonunlar talab qilish. Birgalikda kuchliroqmiz.</p>
-      <span class="action-impact">🤝 Jamoa kuchi</span>
-    </div>
-    <div class="action-card reveal">
-      <span class="action-icon">💧</span>
-      <h3 class="action-title">Suvni tejash</h3>
-      <p class="action-text">Suvni isrof qilmaslik, iqlim o'zgarishiga nisbatan suv tanqisligi muammosini hal qilishga yordam beradi. Kalta dush, tomchilatib sug'orish qo'llang.</p>
-      <span class="action-impact">🌊 Zaruriy qadam</span>
-    </div>
-  </div>
-</section>
-
-<!-- INTERACTIVE -->
-<section id="interactive" style="max-width: 900px; margin: 0 auto;">
-  <div class="reveal">
-    <span class="section-label">🎮 Interaktiv bo'lim</span>
-    <h2 class="section-title">O'yin orqali o'rganing</h2>
-    <p class="section-body">Quyidagi o'yinlar orqali ekologiya haqida qiziqarli tarzda bilib oling va amaliyot qiling.</p>
-  </div>
-
-  <div class="game-wrapper reveal">
-    <div class="game-tabs">
-      <button class="game-tab active" onclick="switchGame('trash')">🗑️ Chiqindini ajrat</button>
-      <button class="game-tab" onclick="switchGame('plant')">🌱 Daraxt o'stir</button>
-      <button class="game-tab" onclick="switchGame('quiz')">❓ Bilim testi</button>
-    </div>
-
-    <!-- TRASH GAME -->
-    <div class="game-panel active" id="panel-trash">
-      <div class="trash-game" id="trashGame">
-        <div class="game-score-bar">
-          <div class="game-score">Ball: <span id="scoreDisplay">0</span></div>
-          <div class="game-time">Vaqt: <span id="timeDisplay">30</span>s</div>
-        </div>
-        <div class="game-area" id="gameArea"></div>
-        <div class="bins">
-          <div class="bin bin-plastic" data-type="plastic" id="bin-plastic">
-            <span class="bin-icon">🔵</span>
-            <span class="bin-label">Plastik</span>
-          </div>
-          <div class="bin bin-organic" data-type="organic" id="bin-organic">
-            <span class="bin-icon">🟢</span>
-            <span class="bin-label">Organik</span>
-          </div>
-          <div class="bin bin-paper" data-type="paper" id="bin-paper">
-            <span class="bin-icon">🟡</span>
-            <span class="bin-label">Qog'oz</span>
-          </div>
-          <div class="bin bin-metal" data-type="metal" id="bin-metal">
-            <span class="bin-icon">🔴</span>
-            <span class="bin-label">Metal</span>
+      <div class="hero-content">
+        <div class="hero-tag">🏜️ Ekologik xavf</div>
+        <h1 class="hero-title">
+          <span class="t1">Cho'llanish</span>
+          <span class="t2">Tabiatni birgalikda asraylik</span>
+        </h1>
+        <p class="hero-body">
+          Cho'llanish — unumdor yerlarning quruq, cho'lga o'xshash hududlarga
+          aylanishi jarayoni. O'zbekistonda bu muammo har yili kuchayib
+          bormoqda. Birgalikda qarshilik ko'rsataylik.
+        </p>
+        <div class="stat-pill">
+          <div class="stat-pill-num">12 mln</div>
+          <div class="stat-pill-info">
+            <strong style="color: var(--text)">Xavf ostidagi yerlar</strong
+            ><br />
+            O'zbekistonda cho'llanish xavfi ostida
           </div>
         </div>
-        <div class="start-screen" id="startScreen">
-          <h3>♻️ Chiqindini ajrat!</h3>
-          <p>Tushib kelayotgan chiqindini to'g'ri idishga suring. Har to'g'ri ajratish uchun ball oling!</p>
-          <button class="btn-game" onclick="startTrashGame()">▶️ Boshlash</button>
+        <div class="hero-btns">
+          <a href="#nima" class="btn btn-sand">🔍 Ko'proq bilish</a>
+          <a href="#game" class="btn btn-ghost">🎮 O'yin o'ynash</a>
+        </div>
+      </div>
+
+      <div class="scroll-hint">
+        <span>Pastga</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ STATS ═══════════════ -->
+    <div class="stats-band reveal">
+      <div class="stats-grid">
+        <div>
+          <div class="s-num" data-count="2" data-suffix=" mlrd">0</div>
+          <div class="s-lbl">Xavf ostidagi odamlar</div>
+        </div>
+        <div>
+          <div class="s-num" data-count="12" data-suffix=" mln">0</div>
+          <div class="s-lbl">Yelar O'zbekistonda</div>
+        </div>
+        <div>
+          <div class="s-num" data-count="75" data-suffix="%">0</div>
+          <div class="s-lbl">Orol dengizi qurigan</div>
+        </div>
+        <div>
+          <div class="s-num" data-count="300" data-suffix=" mln">0</div>
+          <div class="s-lbl">Ekologik muhojirlar yaqinda</div>
         </div>
       </div>
     </div>
 
-    <!-- PLANT GAME -->
-    <div class="game-panel" id="panel-plant">
-      <div class="plant-game">
-        <div class="plant-scene" id="plantScene">
-          <div class="plant-pot" style="left:50%;transform:translateX(-50%)">🪴</div>
-          <div class="plant-stem" id="plantStem"></div>
-          <div class="plant-leaf" id="leaf1" style="bottom:5rem;left:45%;transform-origin:left center">🍃</div>
-          <div class="plant-leaf" id="leaf2" style="bottom:7rem;right:30%;transform-origin:right center">🍃</div>
-          <div class="plant-leaf" id="leaf3" style="bottom:9rem;left:40%">🌿</div>
-          <div id="flowerEl" style="position:absolute;bottom:12rem;left:50%;transform:translateX(-50%);font-size:2rem;opacity:0;transition:all 0.5s">🌸</div>
+    <!-- ═══════════════ NIMA BU ═══════════════ -->
+    <div class="sec-full" id="nima">
+      <div class="sec-inner">
+        <div class="reveal">
+          <span class="sec-label">❓ Tushuntirish</span>
+          <h2 class="sec-title">Cho'llanish nima?</h2>
+          <p class="sec-body">
+            Cho'llanish (desertifikatsiya) — quruq va yarim quruq hududlardagi
+            unumdor yerlarning biologik va iqtisodiy mahsuldorligini yo'qotishi
+            jarayoni. Bu tabiatning degradatsiyasining eng xavfli shakli bo'lib,
+            O'zbekiston uchun eng dolzarb muammolardan biridir.
+          </p>
+          <p class="sec-body" style="margin-top: 1rem">
+            Orol dengizining qurib qolishi, Qizilqum va Qoraqum cho'llarining
+            kengayishi, Zarafshon vohasidagi yer sifatining yomonlashuvi —
+            bularning barchasi cho'llanish jarayonining O'zbekistondagi real
+            ko'rinishlaridir.
+          </p>
         </div>
-        <div class="plant-controls">
-          <div class="plant-stage" id="plantStage">🌱 Urug' ekish</div>
-          <div class="plant-progress">
-            <div class="plant-progress-bar" id="plantBar"></div>
+
+        <!-- Animated sand meter -->
+        <div class="sand-meter reveal">
+          <h3 class="meter-title">🌍 Dunyo va O'zbekiston ko'rsatkichlari</h3>
+          <div class="meter-row">
+            <div class="meter-label">
+              <span>Dunyo quruqligining cho'llanish xavfi ostidagi qismi</span
+              ><span>33%</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-sand" data-w="33"></div>
+            </div>
           </div>
-          <p class="plant-hint" id="plantHint">Daraxtingizni o'stirish uchun tugmani bosing!</p>
-          <button class="btn-game" id="waterBtn" onclick="waterPlant()">💧 Suv ber</button>
+          <div class="meter-row">
+            <div class="meter-label">
+              <span>O'zbekistonda degradatsiyaga uchragan yer</span
+              ><span>47%</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-rust" data-w="47"></div>
+            </div>
+          </div>
+          <div class="meter-row">
+            <div class="meter-label">
+              <span>O'rmon qoplami (maqsad 15% bo'lishi kerak)</span
+              ><span>8%</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-green" data-w="8"></div>
+            </div>
+          </div>
+          <div class="meter-row">
+            <div class="meter-label">
+              <span>Orol dengizining yo'qolgan qismi</span><span>75%</span>
+            </div>
+            <div class="meter-track">
+              <div class="meter-fill fill-rust" data-w="75"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Uzbekistan region map -->
+        <div class="uz-map-section reveal">
+          <h3 class="uz-map-title">🗺️ O'zbekistondagi cho'llanish xaritasi</h3>
+          <p class="uz-map-sub">
+            Hududlarga bosing — holat haqida ma'lumot oling
+          </p>
+          <div class="map-canvas" id="mapCanvas">
+            <!-- Simplified regions as colored blocks -->
+            <div
+              class="region"
+              data-info="Qoraqalpog'iston: Orol dengizining qurib qolishi tufayli eng ko'p zarar ko'rgan hudud. 90% yer degradatsiyaga uchragan."
+              style="
+                background: rgba(160, 82, 45, 0.7);
+                top: 12%;
+                left: 5%;
+                width: 28%;
+                height: 40%;
+                font-size: 0.65rem;
+              "
+            >
+              Qoraqalpog'iston
+              <div class="region-tooltip">
+                🔴 Yuqori xavf: Orol fojеasi, tuz bo'ronlari, cho'llanish
+              </div>
+            </div>
+            <div
+              class="region"
+              data-info="Xorazm: Amudaryo qurib qolishi tufayli fermerlik yerlari cho'lga aylanmoqda."
+              style="
+                background: rgba(180, 100, 45, 0.65);
+                top: 15%;
+                left: 5%;
+                width: 12%;
+                height: 25%;
+                top: 42%;
+                font-size: 0.6rem;
+              "
+            >
+              Xorazm
+              <div class="region-tooltip">
+                🟠 O'rta-yuqori xavf: Daryo suvi kamayishi
+              </div>
+            </div>
+            <div
+              class="region"
+              data-info="Navoiy: Qizilqum cho'li kengaymoqda. Oltin konlari ekologik zarar yetkazmoqda."
+              style="
+                background: rgba(190, 130, 50, 0.6);
+                top: 25%;
+                left: 30%;
+                width: 30%;
+                height: 45%;
+                font-size: 0.65rem;
+              "
+            >
+              Navoiy & Buxoro
+              <div class="region-tooltip">
+                🟡 O'rta xavf: Cho'l kengayishi davom etmoqda
+              </div>
+            </div>
+            <div
+              class="region"
+              data-info="Samarqand & Qashqadaryo: Zarafshon daryosi qurib, yerlar sho'rlanmoqda."
+              style="
+                background: rgba(80, 140, 80, 0.6);
+                bottom: 25%;
+                left: 30%;
+                width: 25%;
+                height: 30%;
+                font-size: 0.6rem;
+              "
+            >
+              Samarqand
+              <div class="region-tooltip">
+                🟢 Past-o'rta xavf: Irrigatsiya muammolari mavjud
+              </div>
+            </div>
+            <div
+              class="region"
+              data-info="Farg'ona vodiysi: Zichlik yuqori, yer resurslariga bosim katta. Sug'orish muammolari."
+              style="
+                background: rgba(60, 160, 90, 0.65);
+                top: 20%;
+                right: 5%;
+                width: 28%;
+                height: 35%;
+                font-size: 0.65rem;
+              "
+            >
+              Farg'ona vodiysi
+              <div class="region-tooltip">
+                🟢 Past xavf: Lekin resurs tanqisligi bor
+              </div>
+            </div>
+            <div
+              class="region"
+              data-info="Surxondaryo: Tog' yonbag'irlari eroziyasi, yerlarning mahsuldorligi pasaymoqda."
+              style="
+                background: rgba(100, 160, 70, 0.6);
+                bottom: 10%;
+                right: 10%;
+                width: 22%;
+                height: 25%;
+                font-size: 0.6rem;
+              "
+            >
+              Surxondaryo
+              <div class="region-tooltip">🟡 O'rta xavf: Eroziya muammosi</div>
+            </div>
+            <!-- Legend -->
+            <div
+              style="
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background: rgba(0, 0, 0, 0.6);
+                border-radius: 0.5rem;
+                padding: 0.5rem;
+                font-size: 0.65rem;
+                line-height: 1.8;
+              "
+            >
+              🔴 Yuqori xavf<br />🟠 O'rta-yuqori<br />🟡 O'rta<br />🟢
+              Past-o'rta
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- QUIZ -->
-    <div class="game-panel" id="panel-quiz">
-      <div class="quiz-game" id="quizGame">
-        <div id="quizContent">
-          <div class="quiz-progress">
-            <span id="qProgress">Savol 1 / 7</span>
-            <span class="quiz-score-badge">Ball: <span id="qScore">0</span></span>
-          </div>
-          <div class="quiz-question" id="quizQuestion"></div>
-          <div class="quiz-options" id="quizOptions"></div>
-          <div class="quiz-feedback" id="quizFeedback"></div>
-          <button class="btn-game" id="nextBtn" onclick="nextQuestion()" style="display:none">Keyingi ➡️</button>
+    <!-- ═══════════════ SABABLAR ═══════════════ -->
+    <div class="sec-full" id="sabab">
+      <div class="sec-inner">
+        <div class="reveal">
+          <span class="sec-label">🌡️ Asosiy sabablar</span>
+          <h2 class="sec-title">Cho'llanish nega sodir<br />bo'lmoqda?</h2>
+          <p class="sec-body">
+            Cho'llanish tabiiy va inson faoliyati bilan bog'liq omillar tufayli
+            kuchayib bormoqda.
+          </p>
         </div>
-        <div class="quiz-result" id="quizResult">
-          <div class="quiz-result-score" id="finalScore">0/7</div>
-          <div class="quiz-result-msg" id="resultMsg"></div>
-          <button class="btn-game" onclick="restartQuiz()">🔄 Qayta boshlash</button>
+        <div class="cards">
+          <div class="card reveal">
+            <span class="card-icon">🌊</span>
+            <h3 class="card-title">Suv resurslarining qisqarishi</h3>
+            <p class="card-text">
+              Amudaryo va Sirdaryo suvlarining qayta taqsimlanishi Orol
+              dengizini deyarli tamomila quritdi. Suv tanqisligi yerlarning
+              qurishiga olib kelmoqda. 1960-yildan beri Orol 75% ga kichraydi.
+            </p>
+            <span class="card-badge">🇺🇿 O'zbekiston uchun kritik</span>
+          </div>
+          <div class="card reveal">
+            <span class="card-icon">🐄</span>
+            <h3 class="card-title">Ortiqcha chorvachilik</h3>
+            <p class="card-text">
+              Yaylovlarda me'yoridan ortiq hayvon boqilishi o'simlik qoplamini
+              yo'q qiladi. Ildizlarsiz tuproq shamol va yomg'irdan eroziyaga
+              uchraydi va cho'lga aylanadi.
+            </p>
+            <span class="card-badge">⚠️ Keng tarqalgan sabab</span>
+          </div>
+          <div class="card reveal">
+            <span class="card-icon">🌲</span>
+            <h3 class="card-title">O'rmonlarning qisqarishi</h3>
+            <p class="card-text">
+              Yoqilg'i va qurilish uchun daraxt kesish tuproq himoyasini yo'q
+              qiladi. O'rmon qoplami yeri ushlab turadigan ildizlarsiz tuproq
+              shamolga uchadi.
+            </p>
+            <span class="card-badge">🌍 Global muammo</span>
+          </div>
+          <div class="card reveal">
+            <span class="card-icon">🏗️</span>
+            <h3 class="card-title">Noto'g'ri sug'orish</h3>
+            <p class="card-text">
+              Haddan tashqari sug'orish tuproqni sho'rlatadi. O'zbekistonda ekin
+              maydonlarining 50% dan ortiq qismi sho'rlanish muammosiga duch
+              kelgan. Sho'rlangan yerda hech narsa o'smaydi.
+            </p>
+            <span class="card-badge">🇺🇿 Mahalliy muammo</span>
+          </div>
+          <div class="card reveal">
+            <span class="card-icon">🌡️</span>
+            <h3 class="card-title">Iqlim o'zgarishi</h3>
+            <p class="card-text">
+              Harorat ko'tarilishi, yog'ingarchilik rejimining o'zgarishi va
+              uzoq davom etadigan qurg'oqchiliklar yerlarning qurib qolishini
+              tezlashtiradi.
+            </p>
+            <span class="card-badge">🌐 Global ta'sir</span>
+          </div>
+          <div class="card reveal">
+            <span class="card-icon">⛏️</span>
+            <h3 class="card-title">Sanoat va konchilik</h3>
+            <p class="card-text">
+              Qazib olish sanoati katta maydonlarni vayron qiladi. Navoiy
+              viloyatidagi oltin konlari va Farg'onadagi neft konlari atrofidagi
+              yerlar buzilgan.
+            </p>
+            <span class="card-badge">⚠️ Mintaqaviy muammo</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- PLEDGE -->
-<section id="pledge" style="max-width: 800px; margin: 0 auto; text-align: center;">
-  <div class="reveal">
-    <span class="section-label">🤝 Birgalikda</span>
-    <h2 class="section-title">Tabiatni asrash<br>va'dasini bering</h2>
-    <p class="section-body" style="margin: 0 auto;">
-      Sizdan oldin quyidagi odamlar tabiatni asrashga va'da bergan. 
-      Siz ham qo'shiling!
-    </p>
-  </div>
-  <div class="pledge-counter" id="pledgeCounter">247</div>
-  <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem;">kishi tabiatni asrashga va'da berdi</p>
-  <div class="pledge-input-wrapper">
-    <input type="text" class="pledge-input" id="pledgeInput" placeholder="Ismingizni kiriting..." maxlength="30">
-    <button class="btn btn-fire" onclick="addPledge()" style="cursor: pointer; border: none;">🤝 Va'da beraman</button>
-  </div>
-  <div class="pledge-list" id="pledgeList">
-    <div class="pledge-name">Aziz N.</div>
-    <div class="pledge-name">Malika R.</div>
-    <div class="pledge-name">Jasur T.</div>
-    <div class="pledge-name">Zulfiya K.</div>
-    <div class="pledge-name">Bobur A.</div>
-  </div>
-</section>
+    <!-- ═══════════════ OQIBATLAR ═══════════════ -->
+    <div class="sec-full" id="oqibat">
+      <div class="sec-inner">
+        <div class="reveal">
+          <span class="sec-label">⚠️ Xavfli oqibatlar</span>
+          <h2 class="sec-title">Cho'llanish nimalarga<br />olib keladi?</h2>
+          <p class="sec-body">
+            Agar hozir choralar ko'rmasak, kelgusi avlodlar uchun bu muammo hal
+            bo'lmaydigan darajaga yetishi mumkin.
+          </p>
+        </div>
+        <div class="timeline reveal">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-year">Allaqachon sodir bo'lmoqda</div>
+            <h3 class="tl-title">🏜️ Orol dengizi fojеasi</h3>
+            <p class="tl-text">
+              Bir vaqtlar dunyoning 4-chi katta ko'li bo'lgan Orol dengizining
+              75% qurib qoldi. Bu hududda tuz bo'ronlari kuchaydi, millionlab
+              aholi o'z yurtini tark etdi, baliqchilik to'liq yo'q bo'ldi.
+            </p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-year">Hozir — 2030</div>
+            <h3 class="tl-title">🌾 Oziq-ovqat xavfsizligi tahdidi</h3>
+            <p class="tl-text">
+              Unumdor yerlar qisqarishi natijasida O'zbekistonda oziq-ovqat
+              ishlab chiqarish kamaymoqda. Fermerlar hosil olmay qolmoqda. 2030
+              yilga kelib yana 20% yer yo'qolishi kutilmoqda.
+            </p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-year">2030 — 2050</div>
+            <h3 class="tl-title">👨‍👩‍👧 Ekologik muhojirat</h3>
+            <p class="tl-text">
+              Yerlarini yo'qotgan fermerlar shaharlar va chet ellarga ko'chib
+              ketishga majbur bo'ladi. 2050 yilgacha dunyo bo'yicha 300 million
+              kishi ekologik muhojir bo'lishi mumkin.
+            </p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-year">2050 — 2100</div>
+            <h3 class="tl-title">🐾 Biologik xilma-xillik yo'qolishi</h3>
+            <p class="tl-text">
+              O'simlik va hayvon turlari yashash muhitini yo'qotadi. O'rta
+              Osiyoda endemik turlarning 30% yo'q bo'lib ketish xavfi bor.
+              Ekosistema zanjiri butunlay buzilishi mumkin.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">🌍 Tabiatni Asraylik</div>
-  <p class="footer-text">
-    Bu platforma Iqlim o'zgarishi haqida O'zbekiston aholisini xabardor qilish va ekologik faollikni rag'batlantirish maqsadida yaratilgan.
-  </p>
-  <p class="footer-quote">"Biz tabiatni meros sifatida ota-bobolarimizdan olmaganmiz — uni farzandlarimizdan qarz olganbiz."</p>
-  <br>
-  <p style="font-size: 0.75rem; color: rgba(255,255,255,0.2); margin-top: 1rem;">Ma'lumotlar: NASA, IPCC, WWF, UN Environment Programme • 2024</p>
-</footer>
+    <!-- ═══════════════ YECHIMLAR ═══════════════ -->
+    <div class="sec-full" id="yechim">
+      <div class="sec-inner">
+        <div class="reveal">
+          <span class="sec-label">✅ Yechimlar</span>
+          <h2 class="sec-title">Biz nima qila<br />olamiz?</h2>
+          <p class="sec-body">
+            Cho'llanishga qarshi kurash har bir kishidan boshlangan global
+            harakatni talab qiladi. Mana amaliy qadamlar:
+          </p>
+        </div>
+        <div class="cards">
+          <div class="card reveal">
+            <span class="card-icon">🌳</span>
+            <h3 class="card-title">Daraxt ekish harakati</h3>
+            <p class="card-text">
+              O'zbekistonda «Yashil makon» dasturi doirasida 2030 yilgacha 1
+              milliard daraxt ekish rejalashtirilgan. Har bir fuqaro ushbu
+              harakatga qo'shilishi mumkin.
+            </p>
+            <span class="card-badge">🌿 Yuqori ta'sir</span>
+          </div>
+          <div class="card reveal">
+            <span class="card-icon">💧</span>
+            <h3 class="card-title">Suv tejovchi texnologiyalar</h3>
+            <p class="card-text">
+              Tomchilatib sug'orish usuli an'anaviy usulga nisbatan 50-70% suvni
+              tejaydi. Sug'orish texnologiyasini modernizatsiya qilish
+              cho'llanishni sekinlashtiradi.
+            </p>
+            <span class="card-badge">💦 Kritik qadam</span>
+          </div>
+          <div class="card reveal">
+            <span class="card-icon">🌾</span>
+            <h3 class="card-title">Barqaror dehqonchilik</h3>
+            <p class="card-text">
+              Crop rotation (almashlab ekish), organik o'g'it, minimal yerga
+              ishlov berish usullari tuproq sifatini saqlaydi va cho'llanishning
+              oldini oladi.
+            </p>
+            <span class="card-badge">🌱 Fermerlar uchun</span>
+          </div>
+          <div class="card reveal">
+            <span class="card-icon">🏞️</span>
+            <h3 class="card-title">Yaylovlarni boshqarish</h3>
+            <p class="card-text">
+              Hayvon sonini tartibga solish, yaylovlarga navbatma-navbat boqish,
+              o'simlik qoplamini tiklash cho'llanishni to'xtatadi. Qishloq
+              jamoalari bu jarayonda hal qiluvchi rol o'ynaydi.
+            </p>
+            <span class="card-badge">🐑 Chorvachilar uchun</span>
+          </div>
+          <div class="card reveal">
+            <span class="card-icon">🔬</span>
+            <h3 class="card-title">Ilmiy tadqiqot</h3>
+            <p class="card-text">
+              Qurg'oqchilikka chidamli ekin navlarini ishlab chiqish, tuproqni
+              tiklash texnologiyalari, sun'iy yog'ingarchilik — fan orqali
+              cho'llanishga qarshi kurashish mumkin.
+            </p>
+            <span class="card-badge">🧪 Kelajak uchun</span>
+          </div>
+          <div class="card reveal">
+            <span class="card-icon">📚</span>
+            <h3 class="card-title">Ta'lim va xabardorlik</h3>
+            <p class="card-text">
+              Maktablarda ekologik ta'lim, ommaviy axborot vositalari orqali
+              xabardorlik, mahalliy jamoalarni jalb qilish — bu muammoni hal
+              qilishda birinchi qadam.
+            </p>
+            <span class="card-badge">🎓 Hamma uchun</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<!-- BACK TO TOP -->
-<a href="#hero" class="back-top" id="backTop">↑</a>
+    <!-- ═══════════════ GAMES ═══════════════ -->
+    <div class="sec-full" id="game">
+      <div class="sec-inner">
+        <div class="reveal">
+          <span class="sec-label">🎮 Interaktiv</span>
+          <h2 class="sec-title">O'yin orqali o'rganing</h2>
+          <p class="sec-body">
+            Cho'llanishga qarshi kurashni simulyatsiya qiluvchi o'yinlar orqali
+            bilimingizni sinab ko'ring.
+          </p>
+        </div>
 
-<script>
-// ========== CURSOR ==========
-const cursor = document.getElementById('cursor');
-const cursorTrail = document.getElementById('cursorTrail');
-let mx = 0, my = 0;
+        <div class="game-wrap reveal">
+          <div class="game-tabs">
+            <button class="g-tab active" onclick="gSwitch('tree', this)">
+              🌳 Daraxt ekish
+            </button>
+            <button class="g-tab" onclick="gSwitch('water', this)">
+              💧 Suv tejash
+            </button>
+            <button class="g-tab" onclick="gSwitch('quiz', this)">
+              ❓ Bilim testi
+            </button>
+          </div>
 
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  cursor.style.left = mx - 6 + 'px';
-  cursor.style.top = my - 6 + 'px';
-  setTimeout(() => {
-    cursorTrail.style.left = mx - 16 + 'px';
-    cursorTrail.style.top = my - 16 + 'px';
-  }, 80);
-});
+          <!-- TREE GAME -->
+          <div class="g-panel active" id="panel-tree">
+            <div class="tree-game">
+              <div class="tree-field" id="treeField">
+                <div class="field-ground"></div>
+                <div class="tree-field-click-zone" id="fieldClick"></div>
+              </div>
+              <div class="tree-ui">
+                <div class="tree-score-row">
+                  <div class="t-score" style="color: var(--oasis2)">
+                    <span>Ekilgan daraxtlar</span>
+                    <span id="treeCount" style="font-size: 2rem">0</span>
+                  </div>
+                  <div class="t-score" style="color: var(--rust)">
+                    <span>Qurib qolgan</span>
+                    <span id="sandCount" style="font-size: 2rem">0</span>
+                  </div>
+                  <div class="t-score" style="color: var(--sand)">
+                    <span>Natijaviylik</span>
+                    <span id="treeEff" style="font-size: 2rem">0%</span>
+                  </div>
+                </div>
+                <div class="tree-progress">
+                  <div class="tree-prog-fill" id="treeProg"></div>
+                </div>
+                <p class="tree-hint" id="treeHint">
+                  🌱 Dala ichiga bosing yoki teging — daraxt oting!
+                </p>
+                <div class="tree-controls">
+                  <button
+                    class="btn btn-sand"
+                    style="cursor: pointer; border: none; font-size: 0.85rem"
+                    onclick="addWater()"
+                  >
+                    💧 Sug'orish (+xavfsizlik)
+                  </button>
+                  <button
+                    class="btn btn-ghost"
+                    style="cursor: pointer; font-size: 0.85rem"
+                    onclick="resetTreeGame()"
+                  >
+                    🔄 Qayta boshlash
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-// ========== HAMBURGER ==========
-const hamburger = document.getElementById('hamburger');
-const mobileMenu = document.getElementById('mobileMenu');
+          <!-- WATER GAME -->
+          <div class="g-panel" id="panel-water">
+            <div class="water-game">
+              <div class="water-score-bar">
+                <span style="color: var(--muted)">💧 Suv tejash bali:</span>
+                <span class="ws-score-val" id="wScore">0</span>
+                <span style="color: var(--muted)"
+                  >Savol: <span id="wQNum">1</span>/6</span
+                >
+              </div>
+              <div id="wContent">
+                <div class="water-scenario">
+                  <div class="ws-q" id="wQuestion"></div>
+                  <div class="ws-opts" id="wOpts"></div>
+                  <div class="ws-fb" id="wFb"></div>
+                  <button
+                    class="btn btn-sand"
+                    id="wNext"
+                    onclick="wNextQ()"
+                    style="
+                      display: none;
+                      cursor: pointer;
+                      border: none;
+                      margin-top: 1rem;
+                      font-size: 0.85rem;
+                    "
+                  >
+                    Keyingi savol →
+                  </button>
+                </div>
+              </div>
+              <div class="q-result" id="wResult">
+                <div class="q-result-num" id="wFinalScore">0/6</div>
+                <p class="q-result-msg" id="wResultMsg"></p>
+                <button
+                  class="btn btn-sand"
+                  onclick="initWater()"
+                  style="cursor: pointer; border: none; font-size: 0.85rem"
+                >
+                  🔄 Qayta boshlash
+                </button>
+              </div>
+            </div>
+          </div>
 
-hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('open');
-  mobileMenu.classList.toggle('open');
-  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
-});
+          <!-- QUIZ -->
+          <div class="g-panel" id="panel-quiz">
+            <div class="quiz-wrap">
+              <div id="qContent">
+                <div class="q-prog">
+                  <span id="qProg">Savol 1/7</span>
+                  <span class="q-score-badge"
+                    >Ball: <span id="qSc">0</span></span
+                  >
+                </div>
+                <div class="q-text" id="qText"></div>
+                <div class="q-opts" id="qOpts"></div>
+                <div class="q-fb" id="qFb"></div>
+                <button
+                  class="btn btn-sand"
+                  id="qNext"
+                  onclick="nextQ()"
+                  style="
+                    display: none;
+                    cursor: pointer;
+                    border: none;
+                    margin-top: 1rem;
+                    font-size: 0.85rem;
+                  "
+                >
+                  Keyingi ➡️
+                </button>
+              </div>
+              <div class="q-result" id="qResult">
+                <div class="q-result-num" id="qFinal">0/7</div>
+                <p class="q-result-msg" id="qMsg"></p>
+                <button
+                  class="btn btn-sand"
+                  onclick="initQuiz()"
+                  style="cursor: pointer; border: none; font-size: 0.85rem"
+                >
+                  🔄 Qayta boshlash
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-function closeMobileMenu() {
-  hamburger.classList.remove('open');
-  mobileMenu.classList.remove('open');
-  document.body.style.overflow = '';
-}
+    <!-- ═══════════════ PLEDGE ═══════════════ -->
+    <section id="pledge">
+      <span class="sec-label">🤝 Birgalikda</span>
+      <h2 class="sec-title" style="max-width: 600px; margin: 0 auto 0.5rem">
+        Tabiatni asrash<br />va'dasini bering
+      </h2>
+      <p class="sec-body" style="margin: 0 auto">
+        Minglab kishilar cho'llanishga qarshi kurashishga va'da bergan. Siz ham
+        qo'shiling!
+      </p>
+      <div class="pledge-big" id="pledgeCnt">1 482</div>
+      <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem">
+        kishi birgalikda tabiatni asrashga va'da berdi
+      </p>
+      <div class="pledge-row">
+        <input
+          type="text"
+          class="pledge-inp"
+          id="pInput"
+          placeholder="Ismingizni kiriting..."
+          maxlength="30"
+        />
+        <button
+          class="btn btn-sand"
+          onclick="addPledge()"
+          style="cursor: pointer; border: none"
+        >
+          🤝 Va'da beraman
+        </button>
+      </div>
+      <div class="pledge-list" id="pList">
+        <div class="pledge-name">
+          Aziz N. — Har kuni daraxt parvarishlayman 🌱
+        </div>
+        <div class="pledge-name">Malika R. — Suvni isrof qilmayman 💧</div>
+        <div class="pledge-name">
+          Jasur T. — Daraxt ekaman va uni asrayman 🌳
+        </div>
+        <div class="pledge-name">Zulfiya K. — Atrofimni tozalab yuraman 🌿</div>
+        <div class="pledge-name">
+          Bobur A. — Yoshlarni ekologiyaga o'rgataman 📚
+        </div>
+      </div>
+    </section>
 
-// ========== PROGRESS BAR ==========
-window.addEventListener('scroll', () => {
-  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-  document.getElementById('progressBar').style.width = pct + '%';
-  
-  // Back to top
-  const bt = document.getElementById('backTop');
-  if (window.scrollY > 500) bt.classList.add('visible');
-  else bt.classList.remove('visible');
-});
+    <!-- FOOTER -->
+    <footer>
+      <div class="ft-logo">🏜️ Cho'llanish — Tabiatni Asraylik</div>
+      <p class="ft-text">
+        Bu platforma cho'llanish va ekologik muammolar haqida O'zbekiston
+        aholisini xabardor qilish va amaliy harakatni rag'batlantirish uchun
+        yaratilgan.
+      </p>
+      <p class="ft-quote">
+        «Yerga to'g'ri munosabatda bo'lsak — u bizni boqadi. Acochasak — cho'lga
+        aylanadi.»
+      </p>
+      <br />
+      <p
+        style="
+          font-size: 0.72rem;
+          color: rgba(255, 255, 255, 0.18);
+          margin-top: 1rem;
+        "
+      >
+        Ma'lumotlar: UNCCD, UNDP O'zbekiston, FAO, O'zbekiston Ekologiya
+        vazirligi • 2024
+      </p>
+    </footer>
 
-// ========== PARTICLES ==========
-const pContainer = document.getElementById('particles');
-const pColors = ['#FF4500','#FF8C00','#FFD700','#FF6347'];
-for (let i = 0; i < 20; i++) {
-  const p = document.createElement('div');
-  p.className = 'particle';
-  const size = Math.random() * 6 + 2;
-  p.style.cssText = `
-    width: ${size}px; height: ${size}px;
-    left: ${Math.random() * 100}%;
-    background: ${pColors[Math.floor(Math.random() * pColors.length)]};
-    animation-duration: ${Math.random() * 10 + 8}s;
-    animation-delay: ${Math.random() * 8}s;
-  `;
-  pContainer.appendChild(p);
-}
+    <a href="#hero" class="back-top" id="backTop">↑</a>
 
-// ========== REVEAL ON SCROLL ==========
-const revealEls = document.querySelectorAll('.reveal');
-const timelineItems = document.querySelectorAll('.timeline-item');
+    <!-- ═══════════════ SCRIPTS ═══════════════ -->
+    <script>
+      // ── SPLASH ──
+      (function () {
+        // generate sand particles
+        const sp = document.getElementById("splashParticles");
+        for (let i = 0; i < 25; i++) {
+          const d = document.createElement("div");
+          d.className = "sand-p";
+          const s = Math.random() * 5 + 1;
+          d.style.cssText = `width:${s}px;height:${s}px;left:${Math.random() * 100}%;
+      animation-duration:${8 + Math.random() * 8}s;
+      animation-delay:${Math.random() * 6}s;`;
+          sp.appendChild(d);
+        }
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((e, i) => {
-    if (e.isIntersecting) {
-      setTimeout(() => e.target.classList.add('visible'), i * 100);
-    }
-  });
-}, { threshold: 0.1 });
+        const splash = document.getElementById("splash");
+        const sw = document.getElementById("sw");
+        const ss = document.getElementById("ss");
+        const nt = document.getElementById("newText");
+        const enterBtn = document.getElementById("enterBtn");
 
-revealEls.forEach(el => observer.observe(el));
-timelineItems.forEach(el => observer.observe(el));
-
-// ========== COUNTER ANIMATION ==========
-const counters = document.querySelectorAll('.stat-num');
-const counterObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting && !e.target.dataset.done) {
-      e.target.dataset.done = '1';
-      const target = +e.target.dataset.count;
-      const suffix = e.target.dataset.suffix || '';
-      let val = 0;
-      const step = target / 60;
-      const timer = setInterval(() => {
-        val = Math.min(val + step, target);
-        e.target.textContent = Math.round(val) + suffix;
-        if (val >= target) clearInterval(timer);
-      }, 25);
-    }
-  });
-}, { threshold: 0.3 });
-counters.forEach(c => counterObserver.observe(c));
-
-// ========== CO2 METER ==========
-const co2Observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting && !e.target.dataset.done) {
-      e.target.dataset.done = '1';
-      const circle = document.getElementById('co2Progress');
-      const val = document.getElementById('co2Val');
-      const pct = (420 / 500);
-      const offset = 502 - (502 * pct);
-      setTimeout(() => { circle.style.strokeDashoffset = offset; }, 300);
-      let n = 0;
-      const t = setInterval(() => {
-        n = Math.min(n + 7, 420);
-        val.textContent = n;
-        if (n >= 420) clearInterval(t);
-      }, 20);
-    }
-  });
-}, { threshold: 0.3 });
-const co2El = document.querySelector('.co2-section');
-if (co2El) co2Observer.observe(co2El);
-
-// ========== TEMPERATURE CHART ==========
-const chartData = [
-  {y:'1900',v:0.05},{y:'1910',v:0.03},{y:'1920',v:0.07},{y:'1930',v:0.12},
-  {y:'1940',v:0.18},{y:'1950',v:0.10},{y:'1960',v:0.15},{y:'1970',v:0.18},
-  {y:'1980',v:0.30},{y:'1990',v:0.45},{y:'2000',v:0.60},{y:'2010',v:0.75},
-  {y:'2020',v:1.02},{y:'2024',v:1.20}
-];
-const maxV = 1.20;
-const chart = document.getElementById('tempChart');
-const labels = document.getElementById('chartLabels');
-
-chartData.forEach(d => {
-  const bar = document.createElement('div');
-  bar.className = 'bar';
-  bar.dataset.year = d.y;
-  bar.dataset.val = d.v;
-  bar.style.height = '0px';
-  chart.appendChild(bar);
-  
-  const lbl = document.createElement('div');
-  lbl.className = 'chart-label';
-  lbl.textContent = d.y;
-  labels.appendChild(lbl);
-});
-
-const chartObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting && !e.target.dataset.done) {
-      e.target.dataset.done = '1';
-      document.querySelectorAll('.bar').forEach((b, i) => {
-        const v = chartData[i].v;
+        // After 1.8s: fade out "Xush kelibsiz"
         setTimeout(() => {
-          b.style.height = (v / maxV * 140) + 'px';
-        }, i * 80);
+          splash.classList.add("splash-phase2");
+          // After fade: show new motto
+          setTimeout(() => {
+            sw.style.display = "none";
+            ss.style.display = "none";
+            splash.classList.remove("splash-phase2");
+            splash.classList.add("splash-phase3");
+            nt.style.position = "relative";
+            nt.style.zIndex = "3";
+            nt.style.textAlign = "center";
+            nt.style.padding = "0 1rem";
+          }, 700);
+        }, 1800);
+
+        function doEnter() {
+          splash.style.animation = "splashFadeOut 0.9s ease forwards";
+          setTimeout(() => {
+            splash.style.display = "none";
+            document.body.style.overflow = "";
+          }, 900);
+        }
+
+        enterBtn.addEventListener("click", doEnter);
+        // Also allow clicking anywhere after motto appears
+        splash.addEventListener("click", function (e) {
+          if (
+            splash.classList.contains("splash-phase3") &&
+            e.target !== enterBtn
+          )
+            doEnter();
+        });
+        document.body.style.overflow = "hidden";
+      })();
+
+      // ── CURSOR ──
+      const cur = document.getElementById("cur"),
+        curR = document.getElementById("curR");
+      let mx = 0,
+        my = 0;
+      document.addEventListener("mousemove", (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+        cur.style.left = mx - 5 + "px";
+        cur.style.top = my - 5 + "px";
+        setTimeout(() => {
+          curR.style.left = mx - 15 + "px";
+          curR.style.top = my - 15 + "px";
+        }, 100);
       });
-    }
-  });
-}, { threshold: 0.3 });
-chartObserver.observe(document.querySelector('.chart-container'));
 
-// ========== GAME: SWITCH TABS ==========
-function switchGame(name) {
-  document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('panel-' + name).classList.add('active');
-  event.target.classList.add('active');
-  if (name === 'quiz') initQuiz();
-}
+      // ── SCROLL ──
+      window.addEventListener("scroll", () => {
+        const pct =
+          (window.scrollY / (document.body.scrollHeight - window.innerHeight)) *
+          100;
+        document.getElementById("pgBar").style.width = pct + "%";
+        const bt = document.getElementById("backTop");
+        window.scrollY > 400
+          ? bt.classList.add("show")
+          : bt.classList.remove("show");
+      });
 
-// ========== TRASH GAME ==========
-const trashItems = [
-  {emoji:'🍶',type:'plastic'},{emoji:'🥤',type:'plastic'},{emoji:'🧴',type:'plastic'},
-  {emoji:'🍌',type:'organic'},{emoji:'🍎',type:'organic'},{emoji:'🥕',type:'organic'},
-  {emoji:'📰',type:'paper'},{emoji:'📦',type:'paper'},{emoji:'📃',type:'paper'},
-  {emoji:'🥫',type:'metal'},{emoji:'🔩',type:'metal'},{emoji:'🪙',type:'metal'}
-];
+      // ── HAMBURGER ──
+      const hbg = document.getElementById("hbg"),
+        mob = document.getElementById("mobMenu");
+      hbg.addEventListener("click", () => {
+        hbg.classList.toggle("open");
+        mob.classList.toggle("open");
+        document.body.style.overflow = mob.classList.contains("open")
+          ? "hidden"
+          : "";
+      });
+      function closeM() {
+        hbg.classList.remove("open");
+        mob.classList.remove("open");
+        document.body.style.overflow = "";
+      }
 
-let score = 0, timeLeft = 30, gameInterval, trashInterval, gameRunning = false;
-let selectedTrash = null;
+      // ── REVEAL ──
+      const revObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e, i) => {
+            if (e.isIntersecting)
+              setTimeout(() => e.target.classList.add("visible"), i * 80);
+          });
+        },
+        { threshold: 0.08 },
+      );
+      document.querySelectorAll(".reveal").forEach((el) => revObs.observe(el));
+      document.querySelectorAll(".tl-item").forEach((el) => revObs.observe(el));
 
-function startTrashGame() {
-  document.getElementById('startScreen').style.display = 'none';
-  score = 0; timeLeft = 30; gameRunning = true;
-  document.getElementById('scoreDisplay').textContent = '0';
-  document.getElementById('timeDisplay').textContent = '30';
-  document.getElementById('gameArea').innerHTML = '';
-  
-  gameInterval = setInterval(() => {
-    timeLeft--;
-    document.getElementById('timeDisplay').textContent = timeLeft;
-    if (timeLeft <= 0) {
-      clearInterval(gameInterval);
-      clearInterval(trashInterval);
-      gameRunning = false;
-      endGame();
-    }
-  }, 1000);
-  
-  trashInterval = setInterval(spawnTrash, 2000);
-  spawnTrash();
-}
+      // ── COUNTERS ──
+      const cObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting && !e.target.dataset.done) {
+              e.target.dataset.done = "1";
+              const target = +e.target.dataset.count,
+                suf = e.target.dataset.suffix || "";
+              let v = 0;
+              const step = target / 60;
+              const t = setInterval(() => {
+                v = Math.min(v + step, target);
+                e.target.textContent = Math.round(v) + suf;
+                if (v >= target) clearInterval(t);
+              }, 22);
+            }
+          });
+        },
+        { threshold: 0.3 },
+      );
+      document.querySelectorAll(".s-num").forEach((c) => cObs.observe(c));
 
-function spawnTrash() {
-  if (!gameRunning) return;
-  const area = document.getElementById('gameArea');
-  const item = trashItems[Math.floor(Math.random() * trashItems.length)];
-  const el = document.createElement('div');
-  el.className = 'trash-item';
-  el.textContent = item.emoji;
-  el.dataset.type = item.type;
-  el.style.left = (10 + Math.random() * 70) + '%';
-  const dur = 4 + Math.random() * 2;
-  el.style.animation = `trashFall ${dur}s linear forwards`;
-  area.appendChild(el);
-  
-  el.addEventListener('click', () => selectTrash(el));
-  el.addEventListener('touchstart', (e) => { e.preventDefault(); selectTrash(el); }, {passive: false});
-  
-  setTimeout(() => { if (el.parentNode) el.remove(); }, dur * 1000);
-}
+      // ── METERS ──
+      const mObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting && !e.target.dataset.done) {
+              e.target.dataset.done = "1";
+              e.target.querySelectorAll(".meter-fill").forEach((f, i) => {
+                setTimeout(
+                  () => {
+                    f.style.width = f.dataset.w + "%";
+                  },
+                  i * 200 + 300,
+                );
+              });
+            }
+          });
+        },
+        { threshold: 0.3 },
+      );
+      const sandM = document.querySelector(".sand-meter");
+      if (sandM) mObs.observe(sandM);
 
-function selectTrash(el) {
-  if (!gameRunning) return;
-  document.querySelectorAll('.trash-item').forEach(t => t.style.border = 'none');
-  selectedTrash = el;
-  el.style.border = '2px solid var(--gold)';
-  el.style.borderRadius = '8px';
-}
+      // ── GAME TABS ──
+      function gSwitch(name, btn) {
+        document
+          .querySelectorAll(".g-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".g-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document.getElementById("panel-" + name).classList.add("active");
+        btn.classList.add("active");
+        if (name === "quiz") initQuiz();
+        if (name === "water") initWater();
+      }
 
-document.querySelectorAll('.bin').forEach(bin => {
-  bin.addEventListener('click', () => {
-    if (!selectedTrash || !gameRunning) return;
-    const correct = selectedTrash.dataset.type === bin.dataset.type;
-    if (correct) {
-      score += 10;
-      document.getElementById('scoreDisplay').textContent = score;
-      showMsg('✅ To\'g\'ri! +10');
-      selectedTrash.remove();
-    } else {
-      score = Math.max(0, score - 5);
-      document.getElementById('scoreDisplay').textContent = score;
-      showMsg('❌ Xato! -5');
-      selectedTrash.style.border = 'none';
-    }
-    selectedTrash = null;
-  });
-  
-  bin.addEventListener('touchstart', (e) => {
-    if (!selectedTrash || !gameRunning) return;
-    e.preventDefault();
-    const correct = selectedTrash.dataset.type === bin.dataset.type;
-    if (correct) {
-      score += 10;
-      document.getElementById('scoreDisplay').textContent = score;
-      showMsg('✅ To\'g\'ri! +10');
-      selectedTrash.remove();
-    } else {
-      score = Math.max(0, score - 5);
-      document.getElementById('scoreDisplay').textContent = score;
-      showMsg('❌ Xato! -5');
-      selectedTrash.style.border = 'none';
-    }
-    selectedTrash = null;
-  }, {passive: false});
-});
+      // ── TREE GAME ──
+      let treeC = 0,
+        sandC = 0,
+        waterLevel = 100;
+      const EMOJIS_TREE = ["🌱", "🌿", "🌲", "🌳", "🪴", "🌴"];
+      const EMOJIS_SAND = ["🏜️", "🟫", "⬜"];
 
-function showMsg(text) {
-  const msg = document.createElement('div');
-  msg.className = 'game-msg';
-  msg.textContent = text;
-  document.getElementById('trashGame').appendChild(msg);
-  setTimeout(() => msg.remove(), 1000);
-}
+      document
+        .getElementById("fieldClick")
+        .addEventListener("click", function (e) {
+          plantTree(e.offsetX, e.offsetY);
+        });
+      document.getElementById("fieldClick").addEventListener(
+        "touchstart",
+        function (e) {
+          e.preventDefault();
+          const t = e.touches[0];
+          const rect = this.getBoundingClientRect();
+          plantTree(t.clientX - rect.left, t.clientY - rect.top);
+        },
+        { passive: false },
+      );
 
-function endGame() {
-  const ss = document.getElementById('startScreen');
-  ss.style.display = 'flex';
-  ss.innerHTML = `
-    <h3>🏆 O'yin tugadi!</h3>
-    <p style="font-size:1.5rem;color:var(--gold);font-family:'Playfair Display',serif;">Ball: ${score}</p>
-    <p>${score >= 100 ? '🌟 Ajoyib! Siz haqiqiy ekolog!' : score >= 50 ? '👍 Yaxshi! Ko\'proq mashq qiling!' : '💪 Davom eting, muvaffaqiyat kutmoqda!'}</p>
-    <button class="btn-game" onclick="startTrashGame()">🔄 Qayta o'ynash</button>
-  `;
-}
+      function plantTree(x, y) {
+        const field = document.getElementById("treeField");
+        const fh = field.offsetHeight;
+        const yPos = Math.min(y, fh * 0.62);
 
-// ========== PLANT GAME ==========
-let plantLevel = 0;
-const plantStages = [
-  { stage: '🌱 Urug\'', hint: '💧 Suv ber — urug\'ni ko\'kartir!', btn: '💧 Suv ber' },
-  { stage: '🌿 Maysacha', hint: '☀️ Quyosh nuri kerak! Davom et!', btn: '☀️ Quyosh' },
-  { stage: '🌳 Ko\'chat', hint: '🌱 O\'git soling! O\'sish jarayoni...', btn: '🌱 O\'git' },
-  { stage: '🌲 Yosh daraxt', hint: '💨 Shamol, havo kerak! Sug\'or!', btn: '💧 Sug\'or' },
-  { stage: '🌳 Voyaga yetgan', hint: '✂️ Budala, parvarishlang!', btn: '✂️ Budala' },
-  { stage: '🌸 Gullamoqda', hint: '🎉 Daraxtingiz gullab-yashnadi!', btn: '🎊 Bayrla!' }
-];
+        const el = document.createElement("div");
+        el.className = "tree-obj";
+        el.textContent = EMOJIS_TREE[Math.min(Math.floor(waterLevel / 20), 5)];
+        el.style.left =
+          Math.max(2, Math.min(x - 16, field.offsetWidth - 40)) + "px";
+        el.style.bottom = field.offsetHeight * 0.35 + "px";
+        field.appendChild(el);
+        treeC++;
 
-function waterPlant() {
-  if (plantLevel >= plantStages.length - 1) {
-    plantLevel = 0;
-    document.getElementById('plantBar').style.width = '0%';
-    document.getElementById('plantStem').style.height = '0';
-    document.getElementById('leaf1').classList.remove('visible');
-    document.getElementById('leaf2').classList.remove('visible');
-    document.getElementById('leaf3').classList.remove('visible');
-    document.getElementById('flowerEl').style.opacity = '0';
-    document.getElementById('plantStage').textContent = '🌱 Urug\' ekish';
-    document.getElementById('plantHint').textContent = 'Yangi daraxt o\'stirishni boshlang!';
-    document.getElementById('waterBtn').textContent = '💧 Suv ber';
-    return;
-  }
-  plantLevel++;
-  const pct = (plantLevel / (plantStages.length - 1)) * 100;
-  document.getElementById('plantBar').style.width = pct + '%';
-  document.getElementById('plantStem').style.height = (plantLevel * 12) + 'px';
-  
-  if (plantLevel >= 2) document.getElementById('leaf1').classList.add('visible');
-  if (plantLevel >= 3) document.getElementById('leaf2').classList.add('visible');
-  if (plantLevel >= 4) document.getElementById('leaf3').classList.add('visible');
-  if (plantLevel >= 5) document.getElementById('flowerEl').style.opacity = '1';
-  
-  const s = plantStages[plantLevel];
-  document.getElementById('plantStage').textContent = s.stage;
-  document.getElementById('plantHint').textContent = s.hint;
-  document.getElementById('waterBtn').textContent = s.btn;
-}
+        // random chance tree dies (sand takes over)
+        const dieChance = waterLevel < 30 ? 0.5 : waterLevel < 60 ? 0.2 : 0.05;
+        if (Math.random() < dieChance) {
+          setTimeout(
+            () => {
+              el.textContent = "🌵";
+              setTimeout(() => {
+                el.textContent =
+                  EMOJIS_SAND[Math.floor(Math.random() * EMOJIS_SAND.length)];
+                el.className = "sand-patch";
+                sandC++;
+                updateTreeUI();
+              }, 1500);
+            },
+            3000 + Math.random() * 3000,
+          );
+        }
+        updateTreeUI();
+      }
 
-// ========== QUIZ ==========
-const questions = [
-  {
-    q: 'Iqlim o\'zgarishiga eng ko\'p hissa qo\'shadigan gaz qaysi?',
-    opts: ['Kislorod (O₂)', 'Karbonat angidrid (CO₂)', 'Azot (N₂)', 'Argon (Ar)'],
-    ans: 1,
-    fb: 'CO₂ — asosiy issiqxona gazi. Sanoat inqilobidan beri uning miqdori 50% ga oshdi.'
-  },
-  {
-    q: 'Global harorat oxirgi 100 yilda o\'rtacha necha darajaga ko\'tarildi?',
-    opts: ['0.1°C', '0.5°C', '1.2°C', '3°C'],
-    ans: 2,
-    fb: 'Harorat +1.2°C ga ko\'tarildi. Bu kichik ko\'rinsa-da, ekosistemalar uchun juda katta o\'zgarish.'
-  },
-  {
-    q: 'Bitta daraxt yiliga o\'rtacha qancha CO₂ yutadi?',
-    opts: ['5 kg', '21 kg', '100 kg', '500 kg'],
-    ans: 1,
-    fb: 'Bitta katta daraxt yiliga taxminan 21 kg CO₂ yutadi. Shuning uchun o\'rmonlar muhim!'
-  },
-  {
-    q: 'Qaysi soha global issiqxona gazlarining eng katta ulushini chiqaradi?',
-    opts: ['Transport', 'Sanoat', 'Energetika', 'Qishloq xo\'jaligi'],
-    ans: 2,
-    fb: 'Energetika global emissiyaning 73% ini tashkil etadi. Qayta tiklanadigan energiyaga o\'tish hal qiluvchi!'
-  },
-  {
-    q: 'Paris kelishuvi maqsadi nima?',
-    opts: ['CO₂ ni to\'liq yo\'q qilish', 'Harorat ko\'tarilishini 1.5°C da ushlab turish', 'O\'rmonlarni kengaytirish', 'Okeanlarni tozalash'],
-    ans: 1,
-    fb: '2015-yilgi Paris kelishuvi global haroratni 1.5°C bilan cheklashni maqsad qiladi.'
-  },
-  {
-    q: 'Plastik chiqindi tabiatda qancha vaqt saqlanadi?',
-    opts: ['10 yil', '50 yil', '200 yil', '500 yil va undan ko\'p'],
-    ans: 3,
-    fb: 'Plastik 500 yilgacha parchalanmaydi! Shuning uchun plastikdan voz kechish juda muhim.'
-  },
-  {
-    q: 'O\'zbekistonda iqlim o\'zgarishining asosiy oqibati nima?',
-    opts: ['Sel ko\'payishi', 'Cho\'llanish va suv tanqisligi', 'Qor ko\'payishi', 'O\'rmonlar o\'sishi'],
-    ans: 1,
-    fb: 'O\'zbekiston cho\'llanish xavfi ostida. Orol dengizi qurib qolishi va Zarafshon muzliklari erishi bu muammoni ko\'rsatadi.'
-  }
-];
+      function addWater() {
+        waterLevel = Math.min(100, waterLevel + 20);
+        const hint = document.getElementById("treeHint");
+        hint.textContent =
+          "💧 Sug'orish amalga oshirildi! Suv darajasi: " + waterLevel + "%";
+        setTimeout(() => {
+          hint.textContent = "🌱 Dala ichiga bosing — daraxt oting!";
+        }, 2500);
+        updateTreeUI();
+      }
 
-let currentQ = 0, quizScore = 0, answered = false;
+      function updateTreeUI() {
+        document.getElementById("treeCount").textContent = treeC;
+        document.getElementById("sandCount").textContent = sandC;
+        const eff = treeC ? Math.round(((treeC - sandC) / treeC) * 100) : 0;
+        document.getElementById("treeEff").textContent = Math.max(0, eff) + "%";
+        document.getElementById("treeProg").style.width =
+          Math.min((treeC / 50) * 100, 100) + "%";
+        // water decreases over time
+        waterLevel = Math.max(10, waterLevel - 2);
+      }
 
-function initQuiz() {
-  currentQ = 0; quizScore = 0; answered = false;
-  document.getElementById('quizContent').style.display = 'block';
-  document.getElementById('quizResult').classList.remove('show');
-  loadQuestion();
-}
+      function resetTreeGame() {
+        treeC = 0;
+        sandC = 0;
+        waterLevel = 100;
+        const f = document.getElementById("treeField");
+        f.querySelectorAll(".tree-obj,.sand-patch").forEach((el) =>
+          el.remove(),
+        );
+        updateTreeUI();
+        document.getElementById("treeHint").textContent =
+          "🌱 Dala ichiga bosing — daraxt oting!";
+      }
 
-function loadQuestion() {
-  if (currentQ >= questions.length) { showResult(); return; }
-  const q = questions[currentQ];
-  answered = false;
-  document.getElementById('qProgress').textContent = `Savol ${currentQ + 1} / ${questions.length}`;
-  document.getElementById('qScore').textContent = quizScore;
-  document.getElementById('quizQuestion').textContent = q.q;
-  document.getElementById('quizFeedback').className = 'quiz-feedback';
-  document.getElementById('quizFeedback').textContent = '';
-  document.getElementById('nextBtn').style.display = 'none';
-  
-  const opts = document.getElementById('quizOptions');
-  opts.innerHTML = '';
-  q.opts.forEach((o, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'quiz-option';
-    btn.textContent = o;
-    btn.onclick = () => selectAnswer(i, btn);
-    opts.appendChild(btn);
-  });
-}
+      // ── WATER SCENARIOS ──
+      const wScenarios = [
+        {
+          q: "Bog'ingizni qanday sug'orasiz?",
+          opts: [
+            "Shlang bilan to'liq sug'oraman",
+            "Tomchilatib sug'orish tizimidan foydalanaman",
+            "Yomg'ir suvi to'plab sug'oraman",
+            "Kun o'rtasida — quyosh chiqib turishida",
+          ],
+          good: [1, 2],
+          fb: {
+            1: "✅ To'g'ri! Tomchilatib sug'orish 70% gacha suv tejaydi.",
+            2: "✅ Mukammal! Yomg'ir suvini to'plash tabiatga yordam beradi.",
+            0: "❌ Shlang bilan to'liq sug'orish suv isrofiga olib keladi.",
+            3: "❌ Kun o'rtasida sug'orish — suv bug'lanib ketadi!",
+          },
+        },
+        {
+          q: "Hovuzingiz suvi toshib ketmoqda. Nima qilasiz?",
+          opts: [
+            "Hech narsa qilmayman — o'zi to'xtaydi",
+            "Kranini yopib, ortiqcha suvni bog'ga yo'naltiraman",
+            "Suv sarfini hisobga oluvchi sensor o'rnataman",
+            "Kranini sekin ochiq qoldiraman",
+          ],
+          good: [1, 2],
+          fb: {
+            1: "✅ Juda yaxshi! Ortiqcha suvni bog'ga yo'naltirish resursni tejaydi.",
+            2: "✅ Ajoyib! Sensor texnologiyasi suv isrofini 40% kamaytiradi.",
+            0: "❌ Befarqlik — suv isrofiga olib keladi, yerlar sho'rlanadi.",
+            3: "❌ Ochiq kran — bemalol isrof.",
+          },
+        },
+        {
+          q: "Fermer sifatida qanday ekin usulini tanlaysiz?",
+          opts: [
+            "Keng maydonlarga an'anaviy sug'orish",
+            "Almashlab ekish va organik o'g'it",
+            "Faqat kimyoviy o'g'it va ko'p suv",
+            "Hech narsa qilmayman — tabiat o'zi tartibga soladi",
+          ],
+          good: [1],
+          fb: {
+            1: "✅ To'g'ri! Almashlab ekish tuproq sifatini saqlaydi va cho'llanishni oldini oladi.",
+            0: "❌ An'anaviy sug'orish tuproqni sho'rlatadi.",
+            2: "❌ Kimyoviy o'g'it ortiqcha ishlatilsa — tuproq vayron bo'ladi.",
+            3: "❌ Passivlik — yerlar tez degradatsiyaga uchraydi.",
+          },
+        },
+        {
+          q: "Kundalik hayotda suvni qanday tejaysiz?",
+          opts: [
+            "Dush o'rniga vanna qabul qilaman",
+            "Tishlarni yuvayotganda kranini yopaman",
+            "Kir yuvish mashinasini yarim to'la ishlataman",
+            "Idishlarni oqar suv ostida yuvaman",
+          ],
+          good: [1],
+          fb: {
+            1: "✅ Katta ta'sir! Faqat shu oddiy qadam oyiga 30 litr suv tejaydi.",
+            0: "❌ Vanna dushga nisbatan 3-4 barobar ko'p suv sarflaydi.",
+            2: "❌ Yarim to'la mashina — ikki marta yurishdan ko'proq suv sarflaydi.",
+            3: "❌ Oqar suv ostida — o'ta ko'p suv sarflanadi.",
+          },
+        },
+        {
+          q: "Qishloqda qaysi sug'orish kanalini qurish maqsadga muvofiq?",
+          opts: [
+            "Ochiq, tekis kanal",
+            "Qoplangan (beton) kanal",
+            "Tunnel orqali suv quvuri",
+            "Yerosti quvurlari tizimi",
+          ],
+          good: [1, 2, 3],
+          fb: {
+            1: "✅ Beton kanal suvning 30% ni yo'qolishidan saqlaydi.",
+            2: "✅ Tunnel — bug'lanishni deyarli to'liq oldini oladi.",
+            3: "✅ Yerosti quvurlari eng samarali — isrof deyarli nol.",
+            0: "❌ Ochiq kanal — bug'lanish va sizib ketish tufayli 50% gacha suv yo'qoladi.",
+          },
+        },
+        {
+          q: "Cho'llanishga qarshi qaysi o'simlikni ekish eng samarali?",
+          opts: ["Saksovul", "Dala qoqio'ti", "Kartoshka", "Paxta"],
+          good: [0],
+          fb: {
+            0: "✅ Mukammal! Saksovul cho'l sharoitida yaxshi o'sadi, ildizi tuproqni ushlab turadi.",
+            1: "❌ Qoqio't unumdorlikni kamaytiradi.",
+            2: "❌ Kartoshka ko'p suv talab qiladi.",
+            3: "❌ Paxta ko'p suv iste'mol qiladi va tuproqni sho'rlatadi.",
+          },
+        },
+      ];
 
-function selectAnswer(idx, btn) {
-  if (answered) return;
-  answered = true;
-  const q = questions[currentQ];
-  const fb = document.getElementById('quizFeedback');
-  document.querySelectorAll('.quiz-option').forEach(b => b.style.pointerEvents = 'none');
-  
-  if (idx === q.ans) {
-    btn.classList.add('correct');
-    quizScore++;
-    fb.textContent = '✅ To\'g\'ri! ' + q.fb;
-    fb.className = 'quiz-feedback correct-fb show';
-  } else {
-    btn.classList.add('wrong');
-    document.querySelectorAll('.quiz-option')[q.ans].classList.add('correct');
-    fb.textContent = '❌ Noto\'g\'ri. ' + q.fb;
-    fb.className = 'quiz-feedback wrong-fb show';
-  }
-  document.getElementById('nextBtn').style.display = 'inline-block';
-}
+      let wCur = 0,
+        wScore = 0,
+        wAnswered = false;
+      function initWater() {
+        wCur = 0;
+        wScore = 0;
+        wAnswered = false;
+        document.getElementById("wContent").style.display = "block";
+        document.getElementById("wResult").classList.remove("show");
+        loadWQ();
+      }
 
-function nextQuestion() {
-  currentQ++;
-  loadQuestion();
-}
+      function loadWQ() {
+        if (wCur >= wScenarios.length) {
+          showWResult();
+          return;
+        }
+        wAnswered = false;
+        const sc = wScenarios[wCur];
+        document.getElementById("wQNum").textContent = wCur + 1;
+        document.getElementById("wQuestion").textContent = sc.q;
+        document.getElementById("wFb").className = "ws-fb";
+        document.getElementById("wFb").textContent = "";
+        document.getElementById("wNext").style.display = "none";
+        const opts = document.getElementById("wOpts");
+        opts.innerHTML = "";
+        sc.opts.forEach((o, i) => {
+          const b = document.createElement("button");
+          b.className = "ws-opt";
+          b.textContent = o;
+          b.onclick = () => answerW(i, b, sc);
+          opts.appendChild(b);
+        });
+      }
 
-function showResult() {
-  document.getElementById('quizContent').style.display = 'none';
-  const result = document.getElementById('quizResult');
-  result.classList.add('show');
-  document.getElementById('finalScore').textContent = quizScore + '/' + questions.length;
-  const msgs = [
-    'Davom eting va ko\'proq o\'rganing! 💪',
-    'Yaxshi natija! Siz ekologiya haqida bilasiz! 👍',
-    'Ajoyib! Siz haqiqiy ekolog! 🌟',
-    'MUKAMMAL! Planetamiz siz kabi qahramonlarga muhtoj! 🏆'
-  ];
-  const idx = Math.floor((quizScore / questions.length) * (msgs.length - 1));
-  document.getElementById('resultMsg').textContent = msgs[idx];
-}
+      function answerW(idx, btn, sc) {
+        if (wAnswered) return;
+        wAnswered = true;
+        const fb = document.getElementById("wFb");
+        document
+          .querySelectorAll(".ws-opt")
+          .forEach((b) => (b.style.pointerEvents = "none"));
+        const isGood = sc.good.includes(idx);
+        btn.classList.add(isGood ? "good" : "bad");
+        if (isGood) {
+          wScore++;
+          btn.classList.add("good");
+        }
+        fb.textContent = sc.fb[idx] || "";
+        fb.className = "ws-fb show " + (isGood ? "ok" : "ng");
+        document.getElementById("wNext").style.display = "inline-flex";
+      }
 
-function restartQuiz() { initQuiz(); }
+      function wNextQ() {
+        wCur++;
+        loadWQ();
+      }
 
-// Auto-init quiz
-initQuiz();
+      function showWResult() {
+        document.getElementById("wContent").style.display = "none";
+        const r = document.getElementById("wResult");
+        r.classList.add("show");
+        document.getElementById("wFinalScore").textContent =
+          wScore + "/" + wScenarios.length;
+        const msgs = [
+          "Suv resurslarini tejash haqida ko'proq o'rganing! 💪",
+          "Yaxshi! Siz suv tejashning ko'p usullarini bilasiz! 👍",
+          "Ajoyib! Siz haqiqiy ekolog! 🌟",
+          "Mukammal! Tabiat sizni qo'l keladi! 🏆",
+        ];
+        document.getElementById("wResultMsg").textContent =
+          msgs[Math.min(Math.floor((wScore / wScenarios.length) * 3), 3)];
+      }
 
-// ========== PLEDGE ==========
-let pledgeCount = 247;
-const names = ['Aziz N.', 'Malika R.', 'Jasur T.', 'Zulfiya K.', 'Bobur A.'];
+      initWater();
 
-document.getElementById('pledgeInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') addPledge();
-});
+      // ── QUIZ ──
+      const Qs = [
+        {
+          q: "Cho'llanish nima?",
+          opts: [
+            "Dengiz sathining ko'tarilishi",
+            "Unumdor yerlarning biologik mahsuldorligini yo'qotishi",
+            "O'rmonlarning o'sishi",
+            "Shaharlarning kengayishi",
+          ],
+          ans: 1,
+          fb: "Cho'llanish — quruq va yarim quruq hududlardagi unumdor yerlarning degradatsiyasi. UNCCD ma'lumotiga ko'ra, bu butun dunyo quruqligining 1/3 ini qamrab olmoqda.",
+        },
+        {
+          q: "Orol dengizi qancha qismini yo'qotdi?",
+          opts: ["10%", "25%", "50%", "75%"],
+          ans: 3,
+          fb: "Orol dengizi 1960-yillarga nisbatan 75% ga kichraydi. Bu insoniyat tarixidagi eng katta ekologik falokat hisoblanadi.",
+        },
+        {
+          q: "O'zbekistonda ekin maydonlarining necha foizi sho'rlanish muammosiga duch kelgan?",
+          opts: ["10%", "30%", "50%", "80%"],
+          ans: 2,
+          fb: "O'zbekistonda ekin maydonlarining 50% dan ortiq qismi sho'rlanish muammosiga duch kelgan. Bu dehqonchilik mahsuldorligini keskin kamaytirmoqda.",
+        },
+        {
+          q: "Saksovul o'simligi cho'llanishga qarshi qanday yordam beradi?",
+          opts: [
+            "Ko'proq yog'in yog'diradi",
+            "Ildizi tuproqni ushlab turadi va eroziyani oldini oladi",
+            "Haroratni pasaytiradi",
+            "Boshqa hududlardan suv jalb qiladi",
+          ],
+          ans: 1,
+          fb: "Saksovul ildizi tuproqni mahkam ushlab turadi, qum uchishiga to'sqinlik qiladi. Bu O'rta Osiyodagi cho'llanishga qarshi kurashning asosiy o'simligi.",
+        },
+        {
+          q: "Tomchilatib sug'orish an'anaviy usulga nisbatan qancha suv tejaydi?",
+          opts: ["10-20%", "30-40%", "50-70%", "80-90%"],
+          ans: 2,
+          fb: "Tomchilatib sug'orish an'anaviy usulga nisbatan 50-70% suv tejaydi. Bu O'zbekistondagi suv tanqisligi va sho'rlanish muammosini hal qilishga yordam beradi.",
+        },
+        {
+          q: 'O\'zbekistonda "Yashil makon" dasturi doirasida 2030 yilgacha nechta daraxt ekish rejalashtirilgan?',
+          opts: ["10 million", "100 million", "1 milliard", "10 milliard"],
+          ans: 2,
+          fb: "\"Yashil makon\" milliy dasturi 2021-yilda boshlangan bo'lib, 2030 yilgacha 1 milliard daraxt va buta ekishni maqsad qiladi. Bu cho'llanishga qarshi kurashning asosiy dasturi.",
+        },
+        {
+          q: "Cho'llanish natijasida 2050 yilgacha necha kishi ekologik muhojir bo'lishi mumkin?",
+          opts: ["10 million", "50 million", "150 million", "300 million"],
+          ans: 3,
+          fb: "BMT ma'lumotiga ko'ra, 2050 yilgacha 300 million kishi cho'llanish, suv tanqisligi va yer degradatsiyasi tufayli ekologik muhojirga aylanishi mumkin.",
+        },
+      ];
 
-function addPledge() {
-  const input = document.getElementById('pledgeInput');
-  const name = input.value.trim();
-  if (!name) { input.focus(); return; }
-  
-  pledgeCount++;
-  document.getElementById('pledgeCounter').textContent = pledgeCount;
-  
-  const el = document.createElement('div');
-  el.className = 'pledge-name';
-  el.textContent = name + ' — Tabiatni asrayman! 🌱';
-  
-  const list = document.getElementById('pledgeList');
-  list.insertBefore(el, list.firstChild);
-  input.value = '';
-  
-  // Animate counter
-  document.getElementById('pledgeCounter').style.transform = 'scale(1.2)';
-  setTimeout(() => document.getElementById('pledgeCounter').style.transform = 'scale(1)', 300);
-}
+      let qCur = 0,
+        qScore = 0,
+        qAnswered = false;
+      function initQuiz() {
+        qCur = 0;
+        qScore = 0;
+        qAnswered = false;
+        document.getElementById("qContent").style.display = "block";
+        document.getElementById("qResult").classList.remove("show");
+        loadQ();
+      }
 
-// Keyboard nav for quiz options
-document.addEventListener('keydown', e => {
-  const opts = document.querySelectorAll('.quiz-option');
-  if (opts.length && !answered) {
-    const num = parseInt(e.key) - 1;
-    if (num >= 0 && num < opts.length) opts[num].click();
-  }
-});
-</script>
-</body>
+      function loadQ() {
+        if (qCur >= Qs.length) {
+          showQResult();
+          return;
+        }
+        qAnswered = false;
+        const q = Qs[qCur];
+        document.getElementById("qProg").textContent =
+          `Savol ${qCur + 1}/${Qs.length}`;
+        document.getElementById("qSc").textContent = qScore;
+        document.getElementById("qText").textContent = q.q;
+        document.getElementById("qFb").className = "q-fb";
+        document.getElementById("qFb").textContent = "";
+        document.getElementById("qNext").style.display = "none";
+        const o = document.getElementById("qOpts");
+        o.innerHTML = "";
+        q.opts.forEach((opt, i) => {
+          const b = document.createElement("button");
+          b.className = "q-opt";
+          b.textContent = opt;
+          b.onclick = () => answerQ(i, b, q);
+          o.appendChild(b);
+        });
+      }
+
+      function answerQ(idx, btn, q) {
+        if (qAnswered) return;
+        qAnswered = true;
+        document
+          .querySelectorAll(".q-opt")
+          .forEach((b) => (b.style.pointerEvents = "none"));
+        const fb = document.getElementById("qFb");
+        if (idx === q.ans) {
+          btn.classList.add("ok");
+          qScore++;
+          fb.className = "q-fb ok show";
+        } else {
+          btn.classList.add("err");
+          document.querySelectorAll(".q-opt")[q.ans].classList.add("ok");
+          fb.className = "q-fb err show";
+        }
+        fb.textContent = (idx === q.ans ? "✅ " : "❌ ") + q.fb;
+        document.getElementById("qNext").style.display = "inline-flex";
+      }
+
+      function nextQ() {
+        qCur++;
+        loadQ();
+      }
+
+      function showQResult() {
+        document.getElementById("qContent").style.display = "none";
+        document.getElementById("qResult").classList.add("show");
+        document.getElementById("qFinal").textContent =
+          qScore + "/" + Qs.length;
+        const msgs = [
+          "Cho'llanish haqida ko'proq o'rganing! 💪",
+          "Yaxshi! Asosiy tushunchalarni bilasiz! 👍",
+          "Ajoyib natija! Siz haqiqiy ekolog! 🌟",
+          "Mukammal! Tabiat xodimi! 🏆",
+        ];
+        document.getElementById("qMsg").textContent =
+          msgs[Math.min(Math.floor((qScore / Qs.length) * 3.9), 3)];
+      }
+
+      initQuiz();
+
+      // ── PLEDGE ──
+      let pledgeN = 1482;
+      document.getElementById("pInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") addPledge();
+      });
+      function addPledge() {
+        const inp = document.getElementById("pInput"),
+          name = inp.value.trim();
+        if (!name) return;
+        pledgeN++;
+        document.getElementById("pledgeCnt").textContent =
+          pledgeN.toLocaleString("ru");
+        const msgs = [
+          "Cho'llanishga qarshi kurashaman 🌱",
+          "Suv tejashni o'rganaman 💧",
+          "Har hafta daraxt ekaman 🌳",
+          "Tabiatni sevaman va asrayman 🌿",
+          "Yoshlarga o'rgataman 📚",
+        ];
+        const el = document.createElement("div");
+        el.className = "pledge-name";
+        el.textContent =
+          name + " — " + msgs[Math.floor(Math.random() * msgs.length)];
+        const list = document.getElementById("pList");
+        list.insertBefore(el, list.firstChild);
+        inp.value = "";
+        const cnt = document.getElementById("pledgeCnt");
+        cnt.style.transform = "scale(1.15)";
+        setTimeout(() => (cnt.style.transform = "scale(1)"), 350);
+      }
+    </script>
+  </body>
 </html>
