@@ -1510,6 +1510,474 @@
         transform: translateY(0);
       }
 
+      /* ═══ YADRO SECTION ═══ */
+      #yadro-section {
+        position: relative;
+        overflow: hidden;
+        padding: 5rem 2rem 4rem;
+        background: linear-gradient(
+          180deg,
+          var(--dark) 0%,
+          rgba(8, 6, 4, 1) 50%,
+          var(--dark) 100%
+        );
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+      .yadro-bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .yadro-bg-particle {
+        position: absolute;
+        border-radius: 50%;
+        animation: yParticle linear infinite;
+      }
+      @keyframes yParticle {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 0;
+        }
+        20% {
+          opacity: 0.8;
+        }
+        80% {
+          opacity: 0.4;
+        }
+        100% {
+          transform: translate(var(--tx), var(--ty)) scale(0.3);
+          opacity: 0;
+        }
+      }
+
+      /* TOP: label + name + shior */
+      .yadro-top {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+      .yadro-label {
+        font-size: 0.72rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+      }
+      .yadro-name-wrap {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 2rem;
+        cursor: default;
+      }
+      .yadro-name {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(5rem, 15vw, 10rem);
+        font-weight: 900;
+        line-height: 1;
+        background: linear-gradient(
+          135deg,
+          #f5edd8 0%,
+          var(--sand) 40%,
+          var(--oasis2) 70%,
+          var(--sand) 100%
+        );
+        background-size: 300%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: yadroShimmer 5s linear infinite;
+        position: relative;
+        z-index: 2;
+        filter: drop-shadow(0 0 40px rgba(212, 168, 75, 0.3));
+      }
+      @keyframes yadroShimmer {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      .y-letter {
+        display: inline-block;
+        animation: yLetterBounce 3s ease-in-out infinite;
+      }
+      @keyframes yLetterBounce {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+        }
+        25% {
+          transform: translateY(-8px) rotate(-3deg);
+        }
+        75% {
+          transform: translateY(4px) rotate(2deg);
+        }
+      }
+      /* Orbit ring around name */
+      .yadro-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 120%;
+        height: 120%;
+        transform: translate(-50%, -50%);
+        border: 1px solid rgba(212, 168, 75, 0.2);
+        border-radius: 50%;
+        animation: ringRotate 12s linear infinite;
+      }
+      .yadro-ring::after {
+        content: "🌿";
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.2rem;
+        animation: counterRotate 12s linear infinite;
+      }
+      @keyframes ringRotate {
+        from {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        to {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+      @keyframes counterRotate {
+        from {
+          transform: translateX(-50%) rotate(0deg);
+        }
+        to {
+          transform: translateX(-50%) rotate(-360deg);
+        }
+      }
+
+      /* Floating particles around name */
+      .yadro-particles {
+        position: absolute;
+        inset: -20px;
+        pointer-events: none;
+      }
+      .yp {
+        position: absolute;
+        font-size: 1rem;
+        animation: yFloat linear infinite;
+        opacity: 0.7;
+      }
+      @keyframes yFloat {
+        0% {
+          transform: translate(0, 0) rotate(0deg) scale(1);
+          opacity: 0;
+        }
+        30% {
+          opacity: 0.8;
+        }
+        70% {
+          opacity: 0.5;
+        }
+        100% {
+          transform: translate(var(--dx), var(--dy)) rotate(360deg) scale(0.3);
+          opacity: 0;
+        }
+      }
+
+      /* SHIOR */
+      .yadro-shior {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(1rem, 3vw, 1.5rem);
+        font-weight: 600;
+        margin-bottom: 0;
+        padding: 1rem 2rem;
+        background: rgba(212, 168, 75, 0.05);
+        border: 1px solid rgba(212, 168, 75, 0.15);
+        border-radius: 999px;
+        max-width: 700px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+      }
+      .shior-line1 {
+        color: var(--oasis2);
+        letter-spacing: 0.05em;
+      }
+      .shior-sep {
+        color: var(--muted);
+        margin: 0 0.3rem;
+      }
+      .shior-line2 {
+        color: var(--sand);
+        letter-spacing: 0.05em;
+        background: linear-gradient(
+          90deg,
+          var(--sand),
+          var(--text),
+          var(--sand)
+        );
+        background-size: 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: yadroShimmer 3s linear infinite;
+      }
+
+      /* ── PLAN ── */
+      .yadro-plan {
+        max-width: 700px;
+        margin: 4rem auto 0;
+        position: relative;
+        z-index: 2;
+      }
+      .plan-header {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 1.8rem;
+      }
+      .plan-icon {
+        font-size: 1.8rem;
+      }
+      .plan-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+      }
+      .plan-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+      .plan-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.2rem;
+        padding: 1.2rem 1.4rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        cursor: pointer;
+        transition: all 0.4s;
+        position: relative;
+        overflow: hidden;
+      }
+      .plan-step::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          rgba(212, 168, 75, 0.05) 0%,
+          transparent 100%
+        );
+        transform: translateX(-100%);
+        transition: transform 0.4s;
+      }
+      .plan-step:hover {
+        border-color: rgba(212, 168, 75, 0.4);
+        transform: translateX(4px);
+      }
+      .plan-step:hover::before {
+        transform: translateX(0);
+      }
+      .plan-step.open {
+        border-color: rgba(212, 168, 75, 0.5);
+        background: rgba(212, 168, 75, 0.05);
+      }
+      .ps-num {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: rgba(212, 168, 75, 0.4);
+        flex-shrink: 0;
+        width: 2rem;
+        transition: color 0.3s;
+      }
+      .plan-step:hover .ps-num,
+      .plan-step.open .ps-num {
+        color: var(--sand);
+      }
+      .ps-content {
+        flex: 1;
+      }
+      .ps-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0.3rem;
+        color: var(--text);
+      }
+      .ps-body {
+        font-size: 0.85rem;
+        color: var(--muted);
+        line-height: 1.6;
+        max-height: 0;
+        overflow: hidden;
+        transition:
+          max-height 0.4s ease,
+          margin-top 0.3s;
+      }
+      .plan-step.open .ps-body {
+        max-height: 80px;
+        margin-top: 0.4rem;
+      }
+      .ps-icon {
+        font-size: 1.2rem;
+        color: var(--muted);
+        flex-shrink: 0;
+        transition:
+          transform 0.3s,
+          color 0.3s;
+        font-style: normal;
+        font-weight: 300;
+      }
+      .plan-step.open .ps-icon {
+        transform: rotate(45deg);
+        color: var(--sand);
+      }
+
+      /* ── TEAM ── */
+      .yadro-team {
+        max-width: 860px;
+        margin: 3.5rem auto 0;
+        position: relative;
+        z-index: 2;
+      }
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.2rem;
+        margin-top: 1.8rem;
+      }
+      .team-card {
+        position: relative;
+        overflow: hidden;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 1.4rem;
+        padding: 1.8rem 1rem;
+        text-align: center;
+        cursor: default;
+        transition: all 0.4s;
+      }
+      .team-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(212, 168, 75, 0.5);
+      }
+      .team-card:hover .tc-glow {
+        opacity: 1;
+      }
+      .team-card:hover .tc-orbit {
+        animation-play-state: running;
+      }
+      /* Avatar circle */
+      .tc-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--sand2), var(--oasis));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: #fff;
+        margin: 0 auto 1rem;
+        position: relative;
+        z-index: 2;
+        box-shadow: 0 4px 20px rgba(212, 168, 75, 0.3);
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+      }
+      .team-card:hover .tc-avatar {
+        transform: scale(1.1);
+        box-shadow: 0 8px 30px rgba(212, 168, 75, 0.5);
+      }
+      /* Glow behind avatar */
+      .tc-glow {
+        position: absolute;
+        top: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(212, 168, 75, 0.3) 0%,
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.4s;
+        z-index: 1;
+      }
+      /* Orbit dot */
+      .tc-orbit {
+        position: absolute;
+        top: 1rem;
+        left: 50%;
+        width: 80px;
+        height: 80px;
+        transform: translateX(-50%);
+        animation: tcOrbit 3s linear infinite paused;
+        z-index: 3;
+      }
+      .tc-orbit::after {
+        content: "✦";
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.6rem;
+        color: var(--sand);
+      }
+      @keyframes tcOrbit {
+        from {
+          transform: translateX(-50%) rotate(0deg);
+        }
+        to {
+          transform: translateX(-50%) rotate(360deg);
+        }
+      }
+      .tc-name {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+        position: relative;
+        z-index: 2;
+      }
+      .tc-role {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-bottom: 0.8rem;
+        position: relative;
+        z-index: 2;
+      }
+      .tc-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        justify-content: center;
+        position: relative;
+        z-index: 2;
+      }
+      .tc-tags span {
+        padding: 0.2rem 0.55rem;
+        background: rgba(212, 168, 75, 0.08);
+        border: 1px solid rgba(212, 168, 75, 0.2);
+        border-radius: 999px;
+        font-size: 0.68rem;
+        color: var(--sand);
+      }
+
       /* ── RESPONSIVE ── */
       @media (max-width: 768px) {
         .nav-links {
@@ -1532,6 +2000,31 @@
         }
         .hero-dunes {
           height: 150px;
+        }
+        .team-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .yadro-name {
+          font-size: clamp(4rem, 18vw, 8rem);
+        }
+        .yadro-shior {
+          font-size: clamp(0.85rem, 3.5vw, 1.2rem);
+          padding: 0.8rem 1.2rem;
+        }
+      }
+      @media (max-width: 480px) {
+        .team-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.8rem;
+        }
+        .tc-avatar {
+          width: 50px;
+          height: 50px;
+          font-size: 1.4rem;
+        }
+        .plan-step {
+          gap: 0.8rem;
+          padding: 1rem;
         }
       }
       @media (max-width: 480px) {
@@ -1602,6 +2095,7 @@
       <a href="#hero" class="nav-logo">🏜️ Cho'llanish</a>
       <ul class="nav-links">
         <li><a href="#hero">Bosh sahifa</a></li>
+        <li><a href="#yadro-section">Yadro</a></li>
         <li><a href="#nima">Nima bu?</a></li>
         <li><a href="#sabab">Sabablar</a></li>
         <li><a href="#oqibat">Oqibatlar</a></li>
@@ -1615,6 +2109,7 @@
     <!-- MOBILE MENU -->
     <div class="mob-menu" id="mobMenu">
       <a href="#hero" onclick="closeM()">🏠 Bosh sahifa</a>
+      <a href="#yadro-section" onclick="closeM()">⚡ Yadro guruh</a>
       <a href="#nima" onclick="closeM()">❓ Cho'llanish nima?</a>
       <a href="#sabab" onclick="closeM()">🌡️ Sabablar</a>
       <a href="#oqibat" onclick="closeM()">⚠️ Oqibatlar</a>
@@ -1677,6 +2172,153 @@
         <div class="scroll-line"></div>
       </div>
     </section>
+
+    <!-- ═══════════════ YADRO GROUP ═══════════════ -->
+    <div id="yadro-section">
+      <!-- Animated particles background -->
+      <div class="yadro-bg" id="yadroBg"></div>
+
+      <!-- GROUP NAME -->
+      <div class="yadro-top reveal">
+        <div class="yadro-label">👥 Loyiha muallifi</div>
+        <div class="yadro-name-wrap">
+          <h2 class="yadro-name" id="yadroName">
+            <span class="y-letter" style="animation-delay: 0s">Y</span
+            ><span class="y-letter" style="animation-delay: 0.08s">a</span
+            ><span class="y-letter" style="animation-delay: 0.16s">d</span
+            ><span class="y-letter" style="animation-delay: 0.24s">r</span
+            ><span class="y-letter" style="animation-delay: 0.32s">o</span>
+          </h2>
+          <div class="yadro-ring" id="yadroRing"></div>
+          <div class="yadro-particles" id="yadroPs"></div>
+        </div>
+        <!-- SHIOR -->
+        <div class="yadro-shior reveal">
+          <span class="shior-line1">Tabiatni asraylik</span>
+          <span class="shior-sep">—</span>
+          <span class="shior-line2">kelajakni saqlaylik</span>
+        </div>
+      </div>
+
+      <!-- PLAN -->
+      <div class="yadro-plan reveal">
+        <div class="plan-header">
+          <div class="plan-icon">📋</div>
+          <h3 class="plan-title">Loyiha rejasi</h3>
+        </div>
+        <div class="plan-steps">
+          <div class="plan-step" onclick="toggleStep(this)">
+            <div class="ps-num">01</div>
+            <div class="ps-content">
+              <h4 class="ps-title">Muammoni aniqlash</h4>
+              <p class="ps-body">
+                O'zbekistondagi cho'llanish va yer degradatsiyasi muammolarini
+                ilmiy ma'lumotlar asosida tahlil qilish
+              </p>
+            </div>
+            <div class="ps-icon">＋</div>
+          </div>
+          <div class="plan-step" onclick="toggleStep(this)">
+            <div class="ps-num">02</div>
+            <div class="ps-content">
+              <h4 class="ps-title">Xabardorlik kampaniyasi</h4>
+              <p class="ps-body">
+                Maktab o'quvchilari va yoshlarni cho'llanish xavfi, sabablari va
+                yechimlar bilan tanishtirish
+              </p>
+            </div>
+            <div class="ps-icon">＋</div>
+          </div>
+          <div class="plan-step" onclick="toggleStep(this)">
+            <div class="ps-num">03</div>
+            <div class="ps-content">
+              <h4 class="ps-title">Interaktiv ta'lim platformasi</h4>
+              <p class="ps-body">
+                Ushbu veb-saytni yaratish — o'yinlar, testlar va ma'lumotlar
+                orqali ekologik bilimni ommalashtirish
+              </p>
+            </div>
+            <div class="ps-icon">＋</div>
+          </div>
+          <div class="plan-step" onclick="toggleStep(this)">
+            <div class="ps-num">04</div>
+            <div class="ps-content">
+              <h4 class="ps-title">Amaliy harakatlar</h4>
+              <p class="ps-body">
+                Daraxt ekish aksiyalari tashkil qilish, mahallalar bilan
+                hamkorlik, saksovul va boshqa o'simliklarni tarqatish
+              </p>
+            </div>
+            <div class="ps-icon">＋</div>
+          </div>
+          <div class="plan-step" onclick="toggleStep(this)">
+            <div class="ps-num">05</div>
+            <div class="ps-content">
+              <h4 class="ps-title">Natijalarni kuzatish</h4>
+              <p class="ps-body">
+                Ekilgan daraxtlar soni, jalb qilingan ishtirokchilar va ekologik
+                ta'sirni monitoring qilish
+              </p>
+            </div>
+            <div class="ps-icon">＋</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEAM -->
+      <div class="yadro-team reveal">
+        <div class="team-header">
+          <div class="plan-icon">🤝</div>
+          <h3 class="plan-title">Jamoa a'zolari</h3>
+        </div>
+        <div class="team-grid">
+          <div class="team-card" data-delay="0">
+            <div class="tc-avatar">N</div>
+            <div class="tc-glow"></div>
+            <div class="tc-orbit"></div>
+            <h4 class="tc-name">N. Umar</h4>
+            <p class="tc-role">Loyiha rahbari</p>
+            <div class="tc-tags">
+              <span>💻 Tech</span>
+              <span>📊 Tahlil</span>
+            </div>
+          </div>
+          <div class="team-card" data-delay="100">
+            <div class="tc-avatar">D</div>
+            <div class="tc-glow"></div>
+            <div class="tc-orbit"></div>
+            <h4 class="tc-name">D. Abdusomad</h4>
+            <p class="tc-role">Tadqiqotchi</p>
+            <div class="tc-tags">
+              <span>🔬 Ilm</span>
+              <span>📚 Ma'lumot</span>
+            </div>
+          </div>
+          <div class="team-card" data-delay="200">
+            <div class="tc-avatar">J</div>
+            <div class="tc-glow"></div>
+            <div class="tc-orbit"></div>
+            <h4 class="tc-name">J. Nuriddin</h4>
+            <p class="tc-role">Dizayner</p>
+            <div class="tc-tags">
+              <span>🎨 Kreativ</span>
+              <span>🌱 Ekologiya</span>
+            </div>
+          </div>
+          <div class="team-card" data-delay="300">
+            <div class="tc-avatar">X</div>
+            <div class="tc-glow"></div>
+            <div class="tc-orbit"></div>
+            <h4 class="tc-name">Xolida</h4>
+            <p class="tc-role">Kontent muallifi</p>
+            <div class="tc-tags">
+              <span>✍️ Yozuv</span>
+              <span>📢 Media</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- ═══════════════ STATS ═══════════════ -->
     <div class="stats-band reveal">
@@ -2390,6 +3032,135 @@
         });
         document.body.style.overflow = "hidden";
       })();
+
+      // ── YADRO SECTION ──
+      (function () {
+        // Background particles
+        const bg = document.getElementById("yadroBg");
+        const emojis = ["🌱", "🌿", "🍃", "🌾", "🏜️", "💧", "✦", "◆", "○"];
+        for (let i = 0; i < 30; i++) {
+          const el = document.createElement("div");
+          el.className = "yadro-bg-particle";
+          const size = Math.random() * 4 + 1;
+          const tx = (Math.random() - 0.5) * 300;
+          const ty = (Math.random() - 0.5) * 300;
+          el.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random() * 100}%;top:${Math.random() * 100}%;
+      background:rgba(212,168,75,${Math.random() * 0.3 + 0.1});
+      --tx:${tx}px;--ty:${ty}px;
+      animation-duration:${8 + Math.random() * 12}s;
+      animation-delay:${Math.random() * 8}s;
+    `;
+          bg.appendChild(el);
+        }
+
+        // Floating emoji particles around Yadro name
+        const yps = document.getElementById("yadroPs");
+        const emj = ["🌱", "🌿", "💧", "✦", "🍃", "🌾"];
+        for (let i = 0; i < 10; i++) {
+          const el = document.createElement("div");
+          el.className = "yp";
+          const dx = (Math.random() - 0.5) * 200;
+          const dy = (Math.random() - 0.5) * 200;
+          el.textContent = emj[i % emj.length];
+          el.style.cssText = `
+      left:${20 + Math.random() * 60}%;top:${20 + Math.random() * 60}%;
+      --dx:${dx}px;--dy:${dy}px;
+      animation-duration:${4 + Math.random() * 5}s;
+      animation-delay:${Math.random() * 4}s;
+      font-size:${0.8 + Math.random() * 0.6}rem;
+    `;
+          yps.appendChild(el);
+        }
+
+        // Letter hover bounce
+        document.querySelectorAll(".y-letter").forEach((l) => {
+          l.addEventListener("mouseenter", () => {
+            l.style.animationDuration = "0.3s";
+            l.style.color = "#fff";
+            setTimeout(() => {
+              l.style.animationDuration = "3s";
+            }, 400);
+          });
+        });
+
+        // Yadro name click explosion
+        const yadroName = document.getElementById("yadroName");
+        yadroName.addEventListener("click", () => {
+          for (let i = 0; i < 15; i++) {
+            const spark = document.createElement("div");
+            spark.style.cssText = `
+        position:fixed;pointer-events:none;z-index:9000;
+        font-size:${0.8 + Math.random() * 1}rem;
+        left:50%;top:45%;
+        animation:sparkOut 0.8s ease forwards;
+      `;
+            spark.textContent = ["🌱", "✦", "🍃", "💧", "🌿", "⭐"][
+              Math.floor(Math.random() * 6)
+            ];
+            const angle = (i / 15) * 360;
+            const dist = 80 + Math.random() * 80;
+            spark.style.setProperty(
+              "--sx",
+              Math.cos((angle * Math.PI) / 180) * dist + "px",
+            );
+            spark.style.setProperty(
+              "--sy",
+              Math.sin((angle * Math.PI) / 180) * dist + "px",
+            );
+            document.body.appendChild(spark);
+            setTimeout(() => spark.remove(), 900);
+          }
+        });
+
+        // Add sparkOut keyframe dynamically
+        const style = document.createElement("style");
+        style.textContent = `@keyframes sparkOut{
+    0%{transform:translate(-50%,-50%) scale(1);opacity:1;}
+    100%{transform:translate(calc(-50% + var(--sx)),calc(-50% + var(--sy))) scale(0);opacity:0;}
+  }`;
+        document.head.appendChild(style);
+      })();
+
+      // ── PLAN STEPS ──
+      function toggleStep(el) {
+        const wasOpen = el.classList.contains("open");
+        document
+          .querySelectorAll(".plan-step")
+          .forEach((s) => s.classList.remove("open"));
+        if (!wasOpen) el.classList.add("open");
+      }
+
+      // ── TEAM CARDS STAGGER ──
+      const teamObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              document.querySelectorAll(".team-card").forEach((card, i) => {
+                setTimeout(
+                  () => {
+                    card.style.opacity = "1";
+                    card.style.transform = "translateY(0)";
+                  },
+                  +card.dataset.delay || i * 100,
+                );
+              });
+              teamObs.disconnect();
+            }
+          });
+        },
+        { threshold: 0.2 },
+      );
+      const teamGrid = document.querySelector(".team-grid");
+      if (teamGrid) {
+        teamGrid.querySelectorAll(".team-card").forEach((c) => {
+          c.style.opacity = "0";
+          c.style.transform = "translateY(30px)";
+          c.style.transition = "all 0.6s ease";
+        });
+        teamObs.observe(teamGrid);
+      }
 
       // ── CURSOR ──
       const cur = document.getElementById("cur"),
